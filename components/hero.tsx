@@ -45,7 +45,7 @@ export function Hero() {
     <section className="relative min-h-screen flex items-center justify-center px-6 lg:px-8 overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="/images/tradecraft-fm-emerging-market-ar-169-stylize-200-v-7-4320fa46-3253-4d51-a195-020395b794bd-1.png"
+          src="/images/fundo2.jpg"
           alt="Bull silhouette against city skyline"
           fill
           className="object-cover object-center"
@@ -55,18 +55,18 @@ export function Hero() {
         <div className="absolute inset-0 bg-[#0a1628]/70" />
       </div>
 
-      <div className="relative mx-auto max-w-5xl text-center py-32">
+      <div className="relative mx-auto max-w-7xl text-center py-32">
         <h1
           className={`font-serif text-5xl md:text-7xl lg:text-8xl font-normal tracking-tight text-balance mb-8 leading-[1.1] text-white transition-all duration-700 ease-out ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}
         >
-          Where Vision Meets
+           Formando cidadãos para o mundo
           <br />
-          <span className="relative inline-block italic">
+          {/* <span className="relative inline-block italic">
             Capital
             <PaintbrushUnderline />
-          </span>
+          </span> */}
         </h1>
 
         <p
@@ -74,8 +74,7 @@ export function Hero() {
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}
         >
-          We partner with ambitious founders and management teams to unlock growth, navigate complexity, and build
-          enduring market leaders. $2.8B+ deployed across 47 portfolio companies.
+          As matrículas para o ano letivo de 2026 estão abertas. Ofereça uma educação que une valores humanos e excelência acadêmica para formar cidadãos do mundo.
         </p>
 
         <div
@@ -85,17 +84,10 @@ export function Hero() {
         >
           <Button
             size="lg"
-            className="rounded-none px-10 min-h-[56px] text-[13px] font-medium tracking-wide uppercase gap-3 bg-white text-[#0a1628] hover:bg-primary hover:text-white transition-colors duration-300"
+            className="rounded-none px-14 min-h-[72px] w-[20%] text-base font-medium tracking-wide uppercase gap-3 bg-white text-[#0a1628] hover:bg-primary hover:text-white transition-colors duration-300"
           >
-            Explore Partnership
+            Nos Contate
             <ArrowRight className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-none px-10 min-h-[56px] text-[13px] font-medium tracking-wide uppercase bg-transparent border-white/30 text-white hover:bg-white hover:text-[#0a1628]"
-          >
-            Our Track Record
           </Button>
         </div>
       </div>

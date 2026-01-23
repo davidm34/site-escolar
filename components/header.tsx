@@ -7,12 +7,13 @@ import { Menu, X, ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const LOGO_URL = "/images/sonho_feliz_logo.png"
+const SCHOOL_NAME = "Escola Sonho Feliz"
 
 const navLinks = [
-  { href: "#about", label: "About" },
-  { href: "#portfolio", label: "Portfolio" },
-  { href: "#team", label: "Team" },
-  { href: "/insights", label: "Insights" },
+  { href: "#about", label: "Sobre Nós" },
+  { href: "#portfolio", label: "Ensino" },
+  { href: "#team", label: "Nossa Equipe" },
+  { href: "/insights", label: "Depoimentos" },
 ]
 
 export function Header() {
@@ -57,13 +58,14 @@ export function Header() {
         <Link href="/" className="flex items-center gap-3 px-6 lg:px-8 py-5">
           <Image
             src={LOGO_URL || "/placeholder.svg"}
-            alt="Crosshaven"
+            alt="Escola Sonho Feliz"
             width={180}
             height={58}
             className="h-20 w-auto"
             priority
             unoptimized
           />
+          <span className="text-lg font-bold text-foreground tracking-tight relative text-[16px] pl-5 font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wide uppercase group">{SCHOOL_NAME}</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-10 ml-auto mr-10">
@@ -81,7 +83,7 @@ export function Header() {
 
         <div className="hidden md:flex self-stretch min-w-[200px]">
           <Button className="group rounded-none w-full h-full text-[13px] font-medium tracking-wide uppercase justify-center hover:bg-foreground">
-            Contact Us
+            Contato
             <ArrowUpRight
               className="ml-2 w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-700 ease-in-out"
               strokeWidth={1}
@@ -112,7 +114,7 @@ export function Header() {
               </Link>
             ))}
             <Button className="group w-full rounded-none mt-6 py-5 text-[13px] font-medium tracking-wide uppercase hover:bg-foreground">
-              Contact Us
+              Contato
               <ArrowUpRight
                 className="ml-2 w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-700 ease-in-out"
                 strokeWidth={1}

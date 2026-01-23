@@ -17,11 +17,11 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: "Crosshaven Partners",
+  title: "Escola Sonho Feliz",
   description: "A research-driven private equity firm connecting emerging markets to global capital.",
   generator: "v0.app",
   icons: {
-    icon: "/crosshaven-icon.svg",
+    icon: "/images/sonho_feliz_logo.png",
     apple: "/crosshaven-icon.svg",
   },
 }
