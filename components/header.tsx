@@ -3,122 +3,135 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, X, ArrowUpRight } from "lucide-react"
+import { 
+  Menu, 
+  X, 
+  MapPin, 
+  Phone, 
+  Facebook, 
+  Twitter, 
+  Linkedin, 
+  Instagram 
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const LOGO_URL = "/images/sonho_feliz_logo.png"
+const LOGO_URL = "/images/sonho_feliz_logo.png" 
 const SCHOOL_NAME = "Escola Sonho Feliz"
 
 const navLinks = [
-  { href: "#about", label: "Sobre Nós" },
-  { href: "#portfolio", label: "Ensino" },
-  { href: "#team", label: "Nossa Equipe" },
-  { href: "/insights", label: "Depoimentos" },
+  { href: "#sobre", label: "Sobre Nós" },
+  { href: "#ensino", label: "Ensino" },
+  { href: "#equipe", label: "Nossa Equipe" },
+  { href: "#depoimentos", label: "Depoimentos" },
 ]
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [hasLoaded, setHasLoaded] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setHasLoaded(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
+  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
-
-      if (currentScrollY < 100) {
-        setIsVisible(true)
-      } else if (currentScrollY > lastScrollY) {
-        setIsVisible(false)
-      } else {
-        setIsVisible(true)
-      }
-
-      setLastScrollY(currentScrollY)
+      setScrolled(window.scrollY > 20)
     }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [lastScrollY])
+  }, [])
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl transition-all duration-700 ease-in-out ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
-      } ${hasLoaded ? "opacity-100" : "opacity-0 -translate-y-4"}`}
-    >
-      <div className="absolute bottom-0 left-0 right-0 h-[0.5px] bg-black/50" />
+    <header className={`fixed top-0 left-0 right-0 z-50 font-fredoka transition-shadow duration-300 ${scrolled ? 'shadow-md' : ''}`}>
+      
+      {/* BARRA SUPERIOR (Rosa) */}
+      <div className="bg-[#E91E63] text-white py-2 px-6 lg:px-24 text-sm font-medium hidden md:block">
+        <div className="max-w-screen-2xl mx-auto flex justify-between items-center">
+          
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 fill-white text-[#E91E63]" />
+              <span>Rua Antônio Serapião, 298, Teofilândia-BA</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 fill-white text-[#E91E63]" />
+              <span>(75) 99123-6691</span>
+            </div>
+          </div>
 
-      <nav className="flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 px-6 lg:px-8 py-5">
-          <Image
-            src={LOGO_URL || "/placeholder.svg"}
-            alt="Escola Sonho Feliz"
-            width={180}
-            height={58}
-            className="h-20 w-auto"
-            priority
-            unoptimized
-          />
-          <span className="text-lg font-bold text-foreground tracking-tight relative text-[16px] pl-5 font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wide uppercase group">{SCHOOL_NAME}</span>
-        </Link>
-
-        <div className="hidden md:flex items-center gap-10 ml-auto mr-10">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="relative text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wide uppercase group"
-            >
-              {link.label}
-              <span className="absolute left-0 -bottom-[2px] h-[2px] w-0 bg-accent group-hover:w-full transition-all duration-500 ease-in-out" />
-            </Link>
-          ))}
+          <div className="flex items-center gap-4">
+            <a href="#" className="hover:opacity-80 transition-opacity"><Facebook className="w-4 h-4 fill-white text-[#E91E63]" /></a>
+            <a href="#" className="hover:opacity-80 transition-opacity"><Instagram className="w-4 h-4" /></a>
+          </div>
         </div>
+      </div>
 
-        <div className="hidden md:flex self-stretch min-w-[200px]">
-          <Button className="group rounded-none w-full h-full text-[13px] font-medium tracking-wide uppercase justify-center hover:bg-foreground">
-            Contato
-            <ArrowUpRight
-              className="ml-2 w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-700 ease-in-out"
-              strokeWidth={1}
-            />
-          </Button>
-        </div>
+      {/* BARRA PRINCIPAL (Navbar) */}
+      {/* Aumentei o px-4 para px-6 e o lg:px-16 para lg:px-24 para afastar das bordas */}
+      <nav className="bg-white py-4 px-6 lg:px-24">
+        <div className="max-w-screen-2xl mx-auto flex items-center justify-between">
+          
+          {/* Logo + Nome da Escola */}
+          <Link href="/" className="flex items-center gap-3 group">
+             {LOGO_URL && (
+                <Image
+                  src={LOGO_URL}
+                  alt={SCHOOL_NAME}
+                  width={60} // Ajuste o tamanho da imagem se necessário
+                  height={60}
+                  className="h-12 w-auto object-contain"
+                />
+             )}
+             {/* Adicionado o texto ao lado do logo */}
+             <span className="text-xl md:text-2xl font-bold text-[#1a237e] group-hover:text-[#E91E63] transition-colors">
+               {SCHOOL_NAME}
+             </span>
+          </Link>
 
-        <button
-          className="md:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center mr-4"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </nav>
-
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-background border-b border-border/50">
-          <div className="px-6 py-6 space-y-4">
+          {/* Links Desktop */}
+          <div className="hidden lg:flex items-center gap-10">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block text-[13px] font-medium text-muted-foreground hover:text-foreground py-3 tracking-wide uppercase"
+                className="text-[#1a237e] text-[18px] font-bold hover:text-[#E91E63] transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Botão Desktop */}
+          <div className="hidden lg:block">
+            <Button 
+              className="bg-[#00E5FF] hover:bg-[#00bcd4] text-white rounded-full px-8 py-6 text-lg font-bold shadow-sm"
+            >
+              Contato
+            </Button>
+          </div>
+
+          {/* Botão Mobile Toggle */}
+          <button
+            className="lg:hidden p-2 text-[#1a237e]"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+          </button>
+        </div>
+      </nav>
+
+      {/* MENU MOBILE */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl">
+          <div className="px-6 py-6 space-y-4 flex flex-col">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-[#1a237e] text-lg font-bold hover:text-[#E91E63]"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <Button className="group w-full rounded-none mt-6 py-5 text-[13px] font-medium tracking-wide uppercase hover:bg-foreground">
+            <Button className="bg-[#00E5FF] hover:bg-[#00bcd4] text-white rounded-full w-full py-6 text-lg font-bold mt-4">
               Contato
-              <ArrowUpRight
-                className="ml-2 w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-700 ease-in-out"
-                strokeWidth={1}
-              />
             </Button>
           </div>
         </div>

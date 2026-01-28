@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Inter, Playfair_Display, Fredoka } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { SmoothScroll } from "@/components/smooth-scroll"
@@ -15,6 +15,12 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
 })
+
+const fredoka = Fredoka({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"], 
+  variable: "--font-fredoka", 
+});
 
 export const metadata: Metadata = {
   title: "Escola Sonho Feliz",
@@ -40,7 +46,7 @@ export default function RootLayout({
   const showLoader = false
 
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} bg-background`}>
+    <html lang="pt" className={`${inter.variable} ${playfair.variable} ${fredoka.variable} bg-background`}>
       <body className="font-sans antialiased">
         {showLoader && <PageLoader />}
         <SmoothScroll>{children}</SmoothScroll>

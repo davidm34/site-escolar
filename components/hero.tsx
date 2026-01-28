@@ -5,35 +5,6 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
-function PaintbrushUnderline() {
-  return (
-    <svg
-      className="absolute -bottom-3 left-0 w-full h-6"
-      viewBox="0 0 300 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="none"
-    >
-      <path
-        d="M2 12C20 6 40 10 60 8C80 6 100 12 120 10C140 8 160 5 180 7C200 9 220 14 240 11C260 8 280 6 298 10"
-        stroke="#2563eb"
-        strokeWidth="8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{
-          filter: "url(#roughen)",
-        }}
-      />
-      <defs>
-        <filter id="roughen">
-          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </defs>
-    </svg>
-  )
-}
-
 export function Hero() {
   const [mounted, setMounted] = useState(false)
 
@@ -42,55 +13,53 @@ export function Hero() {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6 lg:px-8 overflow-hidden">
-      <div className="absolute inset-0">
+    // Seção principal: min-h-screen para ocupar a tela toda, font-fredoka para aplicar a fonte
+    <section className="relative min-h-[90vh] lg:min-h-screen w-full overflow-hidden font-fredoka flex items-center font-fredoka">
+      
+      {/* 1. IMAGEM DE FUNDO */}
+      <div className="absolute inset-0 w-full h-full">
         <Image
-          src="/images/fundo2.jpg"
-          alt="Bull silhouette against city skyline"
+          src="/images/j1.jpg" // IMPORTANTE: Certifique-se de que a imagem está nesta pasta
+          alt="Criança com livro na cabeça e outras brincando ao fundo"
           fill
           className="object-cover object-center"
           priority
         />
-        {/* Dark overlay for text legibility */}
-        <div className="absolute inset-0 bg-[#0a1628]/70" />
+        {/* Overlay opcional: se a imagem for muito clara e dificultar a leitura do card branco, descomente a linha abaixo */}
+        {/* <div className="absolute inset-0 bg-black/10" /> */}
       </div>
 
-      <div className="relative mx-auto max-w-7xl text-center py-32">
+      {/* 2. CARD BRANCO FLUTUANTE */}
+      {/* Usamos posicionamento absoluto e responsivo (lg:left-24, etc.) */}
+      <div 
+        className={`relative z-10 bg-white rounded-[40px] shadow-xl p-12 md:p-18 max-w-md lg:max-w-2xl mx-6 lg:mx-0 lg:left-24 lg:-translate-y-12 transition-all duration-1000 ease-out ${
+          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
+        }`}
+      >
         <h1
-          className={`font-serif text-5xl md:text-7xl lg:text-8xl font-normal tracking-tight text-balance mb-8 leading-[1.1] text-white transition-all duration-700 ease-out ${
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-          }`}
+          // Cor azul escura da imagem
+          className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-[#3F3D56] text-left"
         >
-           Formando cidadãos para o mundo
-          <br />
-          {/* <span className="relative inline-block italic">
-            Capital
-            <PaintbrushUnderline />
-          </span> */}
+          Grandes Sonhos
         </h1>
-
-        <p
-          className={`text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-14 text-pretty leading-relaxed transition-all duration-700 ease-out delay-200 ${
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-          }`}
+        <h2
+          // Cor amarela da imagem
+          className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#FDC12D] mt-4 text-left"
         >
-          As matrículas para o ano letivo de 2026 estão abertas. Ofereça uma educação que une valores humanos e excelência acadêmica para formar cidadãos do mundo.
-        </p>
+          Começam Aqui
+        </h2>
 
-        <div
-          className={`flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-700 ease-out delay-[400ms] ${
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-          }`}
-        >
+        <div className="mt-8 flex justify-start">
           <Button
             size="lg"
-            className="rounded-none px-14 min-h-[72px] w-[20%] text-base font-medium tracking-wide uppercase gap-3 bg-white text-[#0a1628] hover:bg-primary hover:text-white transition-colors duration-300"
+            // Cor rosa e formato arredondado do botão da imagem
+            className="rounded-full px-8 py-6 text-base md:text-lg font-bold tracking-wide bg-[#EC407A] hover:bg-[#d81b60] text-white transition-colors duration-300 shadow-md"
           >
-            Nos Contate
-            <ArrowRight className="w-4 h-4" />
+            Agende uma Visita
           </Button>
         </div>
       </div>
+
     </section>
   )
 }
