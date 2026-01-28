@@ -17,11 +17,11 @@ export default function Home() {
     <main className="min-h-screen bg-background">
       <Header />
       <Hero />
-      <Stats />
+      <Portfolio />
+      <Stats /> 
       <TrustedBy />
       <About />
       <InvestmentThesis />
-      <Portfolio />
       <CaseStudies />
       <ESG />
       <Team />

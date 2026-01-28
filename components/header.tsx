@@ -19,8 +19,8 @@ const LOGO_URL = "/images/sonho_feliz_logo.png"
 const SCHOOL_NAME = "Escola Sonho Feliz"
 
 const navLinks = [
-  { href: "#sobre", label: "Sobre Nós" },
-  { href: "#ensino", label: "Ensino" },
+  { href: "#sobre", label: "Ensino" },
+  { href: "#ensino", label: "Sobre Nós" },
   { href: "#equipe", label: "Nossa Equipe" },
   { href: "#depoimentos", label: "Depoimentos" },
 ]
@@ -63,7 +63,6 @@ export function Header() {
       </div>
 
       {/* BARRA PRINCIPAL (Navbar) */}
-      {/* Aumentei o px-4 para px-6 e o lg:px-16 para lg:px-24 para afastar das bordas */}
       <nav className="bg-white py-4 px-6 lg:px-24">
         <div className="max-w-screen-2xl mx-auto flex items-center justify-between">
           

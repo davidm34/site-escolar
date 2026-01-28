@@ -1,86 +1,143 @@
 import Link from "next/link"
-import { ArrowUpRight, Heart, Factory, Code, Truck, Zap, ShoppingBag } from "lucide-react"
+import { 
+  ArrowUpRight, 
+  Globe,          // Inglês e Espanhol
+  Heart,          // Inteligência Emocional
+  Trophy,         // Ed. Física
+  Palette,        // Artes
+  PiggyBank,      // Ed. Financeira
+  Rocket,         // Empreendedorismo
+  Microscope,     // Ciências (Novo/Padrão)
+  Music           // Música (Novo/Padrão)
+} from "lucide-react"
 import { AnimateOnScroll } from "./animate-on-scroll"
 
-const portfolioCompanies = [
+const cardColors = [
+  "border-b-[#E91E63] group-hover:bg-[#E91E63]/5", // Rosa
+  "border-b-[#FDC12D] group-hover:bg-[#FDC12D]/5", // Amarelo
+  "border-b-[#00E5FF] group-hover:bg-[#00E5FF]/5", // Ciano
+  "border-b-[#8BC34A] group-hover:bg-[#8BC34A]/5", // Verde
+  "border-b-[#9C27B0] group-hover:bg-[#9C27B0]/5", // Roxo
+  "border-b-[#FF5722] group-hover:bg-[#FF5722]/5", // Laranja
+  "border-b-[#3F51B5] group-hover:bg-[#3F51B5]/5", // Indigo (Ciências)
+  "border-b-[#795548] group-hover:bg-[#795548]/5", // Marrom (Música)
+]
+
+const iconColors = [
+  "text-[#E91E63]",
+  "text-[#FDC12D]",
+  "text-[#00E5FF]",
+  "text-[#8BC34A]",
+  "text-[#9C27B0]",
+  "text-[#FF5722]",
+  "text-[#3F51B5]",
+  "text-[#795548]",
+]
+
+const schoolSubjects = [
   {
-    name: "Meridian Healthcare",
-    sector: "Healthcare",
-    description:
-      "Scaled from 3 to 12 states under our partnership. Leading provider of specialized healthcare services.",
-    url: "https://meridianhealthcare.com",
+    name: "Inglês e Espanhol",
+    category: "Idiomas",
+    description: "Conectando nossos pequenos com o mundo através de novas línguas desde cedo.",
+    url: "#",
+    icon: Globe,
+  },
+  {
+    name: "Inteligência Emocional",
+    category: "Sentimentos",
+    description: "Ensinando a lidar com emoções, empatia e a conviver com os amigos com carinho.",
+    url: "#",
     icon: Heart,
   },
   {
-    name: "Atlas Industrial",
-    sector: "Manufacturing",
-    description: "4x revenue growth in 5 years. Precision manufacturing solutions for aerospace and defense.",
-    url: "https://atlasindustrial.com",
-    icon: Factory,
+    name: "Educação Física",
+    category: "Movimento",
+    description: "Corpo em movimento! Esportes e brincadeiras para crescer forte e saudável.",
+    url: "#",
+    icon: Trophy,
   },
   {
-    name: "Vertex Software",
-    sector: "Technology",
-    description: "From Series B to market leader. Enterprise SaaS platform powering digital transformation.",
-    url: "https://vertexsoftware.io",
-    icon: Code,
+    name: "Artes e Teatro",
+    category: "Criatividade",
+    description: "Pintura, atuação e faz de conta para soltar a imaginação e se expressar livremente.",
+    url: "#",
+    icon: Palette,
   },
   {
-    name: "Coastal Logistics",
-    sector: "Transportation",
-    description: "Expanded to 40+ distribution centers. End-to-end supply chain and logistics management.",
-    url: "https://coastallogistics.com",
-    icon: Truck,
+    name: "Educação Financeira",
+    category: "Consciência",
+    description: "Aprendendo o valor das coisas e a cuidar do futuro de forma divertida e prática.",
+    url: "#",
+    icon: PiggyBank,
   },
   {
-    name: "Pinnacle Energy",
-    sector: "Energy",
-    description: "2GW capacity under development. Renewable energy infrastructure at scale.",
-    url: "https://pinnacle-energy.com",
-    icon: Zap,
+    name: "Empreendedorismo",
+    category: "Inovação",
+    description: "Pequenos grandes líderes! Criando projetos e transformando ideias em realidade.",
+    url: "#",
+    icon: Rocket,
   },
   {
-    name: "Horizon Consumer",
-    sector: "Consumer",
-    description: "Acquired and integrated 6 brands. Premium portfolio with national distribution.",
-    url: "https://horizonconsumer.com",
-    icon: ShoppingBag,
+    name: "Ciências e Natureza", // Substituindo Robótica
+    category: "Descoberta",
+    description: "Explorando o mundo ao redor, as plantas, os animais e o meio ambiente.",
+    url: "#",
+    icon: Microscope,
+  },
+  {
+    name: "Musicalização", // Substituindo Culinária
+    category: "Harmonia",
+    description: "Ritmo, sons e instrumentos para estimular a audição e a sensibilidade artística.",
+    url: "#",
+    icon: Music,
   },
 ]
 
 export function Portfolio() {
   return (
-    <section id="portfolio" className="py-28 px-6 lg:px-8 bg-secondary/30">
-      <div className="mx-auto max-w-7xl">
+    <section id="portfolio" className="py-28 px-6 lg:px-8 bg-[#FAFAFA] font-fredoka">
+      <div className="mx-auto max-w-[1400px]">
         <AnimateOnScroll>
-          <div className="mb-16">
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-normal mb-6">Proven Results</h2>
-            <p className="text-muted-foreground max-w-2xl text-pretty text-lg">
-              47 investments. 18 successful exits. See how we've helped exceptional teams build category-defining
-              businesses.
+          <div className="mb-16 text-center">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-[#3F3D56]">
+              Nossas Aulas
+            </h2>
+            <p className="text-muted-foreground max-w-2xl text-xl mx-auto font-medium">
+              Uma grade curricular completa pensada para desenvolver todas as habilidades do seu filho.
             </p>
           </div>
         </AnimateOnScroll>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {portfolioCompanies.map((company, index) => (
-            <AnimateOnScroll key={company.name} delay={index * 100}>
-              <Link href={company.url} target="_blank" rel="noopener noreferrer">
-                <div className="group p-8 h-full border border-border/50 bg-card hover:border-accent/40 hover:shadow-lg transition-all duration-300 cursor-pointer">
-                  <div className="flex items-start justify-between mb-8">
-                    <div className="w-14 h-14 bg-primary/10 flex items-center justify-center">
-                      <company.icon className="w-7 h-7 text-primary" strokeWidth={1} />
-                    </div>
-                    <ArrowUpRight
-                      className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors"
-                      strokeWidth={1}
-                    />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {schoolSubjects.map((subject, index) => (
+            <AnimateOnScroll key={subject.name} delay={index * 100}>
+              <Link href={subject.url} className="block h-full">
+                <div 
+                  className={`
+                    group relative p-8 h-full 
+                    bg-white 
+                    rounded-[35px] shadow-sm hover:shadow-xl 
+                    border border-gray-100 ${cardColors[index % cardColors.length]} border-b-[6px]
+                    transition-all duration-300 transform hover:-translate-y-2 cursor-pointer 
+                    flex flex-col items-center text-center
+                  `}
+                >
+                  
+                  <div className={`mb-6 mt-4 p-4 rounded-full bg-gray-50 ${iconColors[index % iconColors.length]} bg-opacity-10`}>
+                    <subject.icon className={`w-12 h-12 ${iconColors[index % iconColors.length]}`} strokeWidth={2} />
                   </div>
-                  <div className="text-[11px] font-medium text-accent uppercase tracking-widest mb-3">
-                    {company.sector}
+
+                  <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">
+                    {subject.category}
                   </div>
-                  <h3 className="text-xl font-medium mb-3">{company.name}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{company.description}</p>
+                  
+                  <h3 className="text-2xl font-bold mb-3 text-[#3F3D56] group-hover:text-[#E91E63] transition-colors">
+                    {subject.name}
+                  </h3>
+                  
+                  <p className="text-base text-gray-500 leading-relaxed font-medium">
+                    {subject.description}
+                  </p>
                 </div>
               </Link>
             </AnimateOnScroll>
