@@ -4,7 +4,7 @@ import { Stats } from "@/components/stats"
 import { TrustedBy } from "@/components/trusted-by"
 import { AboutUs } from "@/components/about"
 import { Portfolio } from "@/components/portfolio"
-import { CaseStudies } from "@/components/case-studies"
+import { Testimonials } from "@/components/case-studies"
 import { ESG } from "@/components/esg"
 import { Team } from "@/components/team"
 import { Insights } from "@/components/insights"
@@ -19,7 +19,7 @@ export default function Home() {
       <Portfolio />
       <AboutUs />
       <Team />
-      <CaseStudies />
+      <Testimonials />
       <ContactCTA />
       <Footer />
     </main>
