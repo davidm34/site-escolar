@@ -2,8 +2,7 @@ import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
 import { Stats } from "@/components/stats"
 import { TrustedBy } from "@/components/trusted-by"
-import { About } from "@/components/about"
-import { InvestmentThesis } from "@/components/investment-thesis"
+import { AboutUs } from "@/components/about"
 import { Portfolio } from "@/components/portfolio"
 import { CaseStudies } from "@/components/case-studies"
 import { ESG } from "@/components/esg"
@@ -18,14 +17,9 @@ export default function Home() {
       <Header />
       <Hero />
       <Portfolio />
-      <Stats /> 
-      <TrustedBy />
-      <About />
-      <InvestmentThesis />
-      <CaseStudies />
-      <ESG />
+      <AboutUs />
       <Team />
-      <Insights />
+      <CaseStudies />
       <ContactCTA />
       <Footer />
     </main>
