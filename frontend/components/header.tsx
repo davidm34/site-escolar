@@ -96,11 +96,14 @@ export function Header() {
 
           {/* Botão Desktop */}
           <div className="hidden lg:block">
-            <Button 
-              className="bg-[#00E5FF] hover:bg-[#00bcd4] text-white rounded-full px-8 py-6 text-lg font-bold shadow-sm"
-            >
-              Portal
-            </Button>
+            {/* Envolvemos o botão no Link direcionando para a rota /login */}
+            <Link href="/login">
+              <Button 
+                className="bg-[#00E5FF] hover:bg-[#00bcd4] text-white rounded-full px-8 py-6 text-lg font-bold shadow-sm transition-transform hover:scale-105"
+              >
+                Acesso ao Portal
+              </Button>
+            </Link>
           </div>
 
           {/* Botão Mobile Toggle */}
@@ -115,23 +118,15 @@ export function Header() {
 
       {/* MENU MOBILE */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl">
-          <div className="px-6 py-6 space-y-4 flex flex-col">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-[#1a237e] text-lg font-bold hover:text-[#E91E63]"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Button className="bg-[#00E5FF] hover:bg-[#00bcd4] text-white rounded-full w-full py-6 text-lg font-bold mt-4">
-              Portal
-            </Button>
-          </div>
-        </div>
+      <div className="...">
+        {/* ... links de navegação ... */}
+        
+        <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+          <Button className="bg-[#00E5FF] hover:bg-[#00bcd4] text-white rounded-full w-full py-6 text-lg font-bold mt-4">
+            Acesso ao Portal
+          </Button>
+        </Link>
+      </div>
       )}
     </header>
   )
