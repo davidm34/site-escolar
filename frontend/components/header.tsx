@@ -99,7 +99,7 @@ export function Header() {
             <Button 
               className="bg-[#00E5FF] hover:bg-[#00bcd4] text-white rounded-full px-8 py-6 text-lg font-bold shadow-sm"
             >
-              Contato
+              Portal
             </Button>
           </div>
 
@@ -128,7 +128,7 @@ export function Header() {
               </Link>
             ))}
             <Button className="bg-[#00E5FF] hover:bg-[#00bcd4] text-white rounded-full w-full py-6 text-lg font-bold mt-4">
-              Contato
+              Portal
             </Button>
           </div>
         </div>
