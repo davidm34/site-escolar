@@ -11,8 +11,8 @@ const footerLinks = {
     { label: "Nossa Equipe", href: "#equipe" },
   ],
   social: [
-    { label: "Instagram", href: "#", icon: Instagram },
-    { label: "Facebook", href: "#", icon: Facebook },
+    { label: "Instagram", href: "https://www.instagram.com/fsonho/", icon: Instagram },
+    { label: "Facebook", href: "https://www.facebook.com/escolasonhofeliz.com.br", icon: Facebook },
   ]
 }
 

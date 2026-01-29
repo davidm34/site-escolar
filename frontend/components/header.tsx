@@ -9,8 +9,6 @@ import {
   MapPin, 
   Phone, 
   Facebook, 
-  Twitter, 
-  Linkedin, 
   Instagram 
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -56,8 +54,8 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-4">
-            <a href="#" className="hover:opacity-80 transition-opacity"><Facebook className="w-4 h-4 fill-white text-[#E91E63]" /></a>
-            <a href="#" className="hover:opacity-80 transition-opacity"><Instagram className="w-4 h-4" /></a>
+            <a href="https://www.facebook.com/escolasonhofeliz.com.br" className="hover:opacity-80 transition-opacity"><Facebook className="w-4 h-4 fill-white text-[#E91E63]" /></a>
+            <a href="https://www.instagram.com/fsonho/" className="hover:opacity-80 transition-opacity"><Instagram className="w-4 h-4" /></a>
           </div>
         </div>
       </div>
