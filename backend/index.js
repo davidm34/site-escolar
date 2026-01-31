@@ -1,17 +1,30 @@
+require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+
 const app = express();
-const PORT = 3001;
 
-// Middleware para permitir que o Express entenda JSON no corpo das requisições
-app.use(express.json());
+// Middlewares de Segurança
+app.use(helmet());
+app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000' }));
+app.use(express.json({ limit: '10kb' })); 
 
-// Rota de exemplo (GET) - O famoso "Hello World"
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // Janela de 15 minutos
+    max: 100, // Limita cada IP a 100 requisições por janela
+    message: "Muitas requisições vindas deste IP, tente novamente mais tarde."}
+);
+
+app.use('/api/', limiter); // Aplica o limite apenas nas rotas de API
+
 app.get('/', (req, res) => {
     res.send('Bem-vindo à minha API Node.js!');
 });
 
 // Rota de exemplo (POST) - Recebendo dados
-app.post('/usuario', (req, res) => {
+app.post('/usuario', (req, res) => {    
     const { nome } = req.body;
     res.status(201).json({
         mensagem: `Usuário ${nome} criado com sucesso!`,
@@ -19,7 +32,5 @@ app.post('/usuario', (req, res) => {
     });
 });
 
-// Iniciando o servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+
+app.listen(process.env.PORT);

@@ -83,7 +83,7 @@ export default function LoginPage() {
             </div>
 
             {/* Botão Entrar */}
-           <Link href="/painel-professor" className="block w-full">
+           <Link href="/painel-aluno" className="block w-full">
               <Button className="w-full bg-[#E91E63] hover:bg-[#d81b60] text-white rounded-full py-7 text-lg font-bold shadow-md hover:shadow-lg hover:-translate-y-1 transition-all mt-4">
                 Entrar na Escola <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
