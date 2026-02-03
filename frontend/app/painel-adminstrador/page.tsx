@@ -15,6 +15,7 @@ import {
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
 
 // Dados do Admin
 const admin = {
@@ -54,7 +55,7 @@ const registrationMenu = [
     description: "Nova sala de aula",
     color: "text-[#FDC12D]",
     border: "border-[#FDC12D]",
-    link: "/painel-admin/nova-turma"
+    link: "/painel-adminstrador/nova-turma"
   },
 ]
 
@@ -67,6 +68,21 @@ const classesManagement = [
 ]
 
 export default function AdminDashboard() {
+
+  const [userName, setUserName] = useState("Carregando...");
+
+  useEffect(() => {
+    // Recupera os dados salvos no login
+    const savedUser = localStorage.getItem("@Escola:user");
+    
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      // 'nome_completo' ou 'nome' dependendo de como seu backend retorna
+      setUserName(user.nome); 
+    }
+  }, []);
+
+
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka pb-10">
       
@@ -82,7 +98,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div>
-            <h2 className="text-[#3F3D56] font-bold text-lg leading-none">{admin.name}</h2>
+            <h2 className="text-[#3F3D56] font-bold text-lg leading-none">{userName}</h2>
             <p className="text-gray-400 text-sm font-medium">{admin.role}</p>
           </div>
         </div>

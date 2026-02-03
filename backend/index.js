@@ -1,36 +1,25 @@
 require('dotenv').config();
 const express = require('express');
-const helmet = require('helmet');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+
+// Importação das Rotas
+const authRoutes = require('./src/controllers/auth.controller');
 
 const app = express();
 
-// Middlewares de Segurança
+// Middlewares
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000' }));
-app.use(express.json({ limit: '10kb' })); 
+app.use(cors());
+app.use(express.json());
 
-const limiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // Janela de 15 minutos
-    max: 100, // Limita cada IP a 100 requisições por janela
-    message: "Muitas requisições vindas deste IP, tente novamente mais tarde."}
-);
+// Uso das Rotas
+app.use('/auth', authRoutes);
 
-app.use('/api/', limiter); // Aplica o limite apenas nas rotas de API
+// Rota padrão para teste
+app.get('/', (req, res) => res.send('API Escola Sonho Feliz Online'));
 
-app.get('/', (req, res) => {
-    res.send('Bem-vindo à minha API Node.js!');
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
-
-// Rota de exemplo (POST) - Recebendo dados
-app.post('/usuario', (req, res) => {    
-    const { nome } = req.body;
-    res.status(201).json({
-        mensagem: `Usuário ${nome} criado com sucesso!`,
-        status: "sucesso"
-    });
-});
-
-
-app.listen(process.env.PORT);
