@@ -15,11 +15,15 @@ app.use(express.json());
 
 // Uso das Rotas
 app.use('/auth', authRoutes);
+app.use('/aluno', require('./routes/aluno'));
+app.use('/professores', require('./routes/professores'));
+app.use('/administradores', require('./routes/administradores'));
+
 
 // Rota padrão para teste
 app.get('/', (req, res) => res.send('API Escola Sonho Feliz Online'));
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Servidor rodando em http://localhost: {PORT}`);
 });
