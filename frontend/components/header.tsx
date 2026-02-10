@@ -17,8 +17,8 @@ const LOGO_URL = "/images/sonho_feliz_logo.png"
 const SCHOOL_NAME = "Escola Sonho Feliz"
 
 const navLinks = [
-  { href: "#sobre", label: "Ensino" },
-  { href: "#ensino", label: "Sobre Nós" },
+  { href: "#portfolio", label: "Ensino" },
+  { href: "#sobre", label: "Sobre Nós" },
   { href: "#equipe", label: "Nossa Equipe" },
   { href: "#depoimentos", label: "Depoimentos" },
 ]
