@@ -39,7 +39,7 @@ const registrationMenu = [
     description: "Matricular estudante",
     color: "text-[#E91E63]",
     border: "border-[#E91E63]",
-    link: "/painel-admin/novo-aluno"
+    link: "/painel-adminstrador/novo-aluno"
   },
   {
     title: "Novo Professor",
@@ -47,7 +47,7 @@ const registrationMenu = [
     description: "Cadastrar docente",
     color: "text-[#00E5FF]",
     border: "border-[#00E5FF]",
-    link: "/painel-admin/novo-professor"
+    link: "/painel-adminstrador/novo-professor"
   },
   {
     title: "Criar Turma",

@@ -15,9 +15,9 @@ app.use(express.json());
 
 // Uso das Rotas
 app.use('/auth', authRoutes);
-app.use('/aluno', require('./routes/aluno'));
-app.use('/professores', require('./routes/professores'));
-app.use('/administradores', require('./routes/administradores'));
+app.use('/aluno', require('./src/routes/aluno'));
+app.use('/professores', require('./src/routes/professores'));
+app.use('/administradores', require('./src/routes/administradores'));
 
 
 // Rota padrão para teste
