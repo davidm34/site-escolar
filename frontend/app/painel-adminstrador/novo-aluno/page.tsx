@@ -22,7 +22,7 @@ export default function CreateStudentPage() {
 
       {/* --- CABEÇALHO DE NAVEGAÇÃO --- */}
       <div className="w-full max-w-2xl z-10 flex items-center justify-between mb-8">
-        <Link href="/painel-admin">
+        <Link href="/painel-adminstrador">
           <Button variant="ghost" className="text-[#3F3D56] hover:bg-white/50 hover:text-[#E91E63] font-bold rounded-full gap-2 pl-2">
             <div className="bg-white p-2 rounded-full shadow-sm">
                <ChevronLeft className="w-5 h-5" strokeWidth={3} />

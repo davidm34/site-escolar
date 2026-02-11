@@ -3,18 +3,43 @@
 import { 
   Users, 
   ChevronLeft, 
-  User, 
-  Clock, 
-  MapPin, 
-  Hash, 
+  BookOpen, 
   Save, 
   Sparkles,
-  BookOpen
+  Check
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
+
+// Lista de Disciplinas Disponíveis (Mock)
+const availableSubjects = [
+  { id: 1, name: "Português", color: "bg-blue-100 text-blue-600 border-blue-200" },
+  { id: 2, name: "Matemática", color: "bg-red-100 text-red-600 border-red-200" },
+  { id: 3, name: "História", color: "bg-orange-100 text-orange-600 border-orange-200" },
+  { id: 4, name: "Geografia", color: "bg-green-100 text-green-600 border-green-200" },
+  { id: 5, name: "Ciências", color: "bg-teal-100 text-teal-600 border-teal-200" },
+  { id: 6, name: "Redação", color: "bg-indigo-100 text-indigo-600 border-indigo-200" },
+  { id: 7, name: "Inglês", color: "bg-pink-100 text-pink-600 border-pink-200" },
+  { id: 8, name: "Espanhol", color: "bg-yellow-100 text-yellow-600 border-yellow-200" },
+  { id: 9, name: "Educação Física", color: "bg-purple-100 text-purple-600 border-purple-200" },
+  { id: 10, name: "Educação Financeira e Empreendedorismo", color: "bg-gray-100 text-gray-600 border-gray-200" },
+  { id: 11, name: "Artes", color: "bg-cyan-100 text-cyan-600 border-cyan-200" },
+  { id: 12, name: "Ensino Infantil", color: "bg-fuchsia-100 text-fuchsia-600 border-fuchsia-200" },
+]
 
 export default function CreateClassPage() {
+  // Estado para gerenciar as disciplinas selecionadas
+  const [selectedSubjects, setSelectedSubjects] = useState<number[]>([])
+
+  const toggleSubject = (id: number) => {
+    setSelectedSubjects(prev => 
+      prev.includes(id) 
+        ? prev.filter(subjectId => subjectId !== id) 
+        : [...prev, id]
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka p-6 pb-20 relative overflow-hidden flex flex-col items-center">
       
@@ -47,7 +72,7 @@ export default function CreateClassPage() {
               Criar Nova Turma
             </h1>
             <p className="text-gray-500 font-medium">
-              Defina o professor, sala e horários da nova classe.
+              Defina o nome e a grade curricular da classe.
             </p>
           </div>
         </div>
@@ -59,105 +84,66 @@ export default function CreateClassPage() {
 
           <form className="space-y-8">
             
-            {/* SEÇÃO 1: DADOS BÁSICOS */}
+            {/* CAMPO 1: NOME DA TURMA */}
             <div>
               <h3 className="text-lg font-bold text-[#FDC12D] uppercase tracking-wider mb-4 flex items-center gap-2">
-                <BookOpen className="w-5 h-5" /> Informações da Turma
+                <Users className="w-5 h-5" /> Identificação
               </h3>
               
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Nome da Turma */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-500 ml-2">Nome da Turma</label>
-                  <input 
-                    type="text" 
-                    placeholder="Ex: Maternal II - B"
-                    className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#FDC12D] text-gray-600 rounded-2xl py-3 px-4 outline-none transition-all font-medium h-12"
-                  />
-                </div>
-
-                {/* Ano Letivo */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-500 ml-2">Ano Letivo</label>
-                  <select className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#FDC12D] text-gray-600 rounded-2xl py-3 px-4 outline-none transition-all font-medium h-12 appearance-none cursor-pointer">
-                    <option>2026</option>
-                    <option>2027</option>
-                  </select>
-                </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-500 ml-2">Nome da Turma</label>
+                <input 
+                  type="text" 
+                  placeholder="Ex: Maternal II - B (Manhã)"
+                  className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#FDC12D] text-gray-600 rounded-2xl py-4 px-6 outline-none transition-all font-medium text-lg h-16"
+                />
               </div>
             </div>
 
             <hr className="border-gray-100 dashed" />
 
-            {/* SEÇÃO 2: LOGÍSTICA */}
+            {/* CAMPO 2: DISCIPLINAS (SELEÇÃO MÚLTIPLA) */}
             <div>
-              <h3 className="text-lg font-bold text-[#00E5FF] uppercase tracking-wider mb-4 flex items-center gap-2">
-                <User className="w-5 h-5" /> Responsáveis e Local
+              <h3 className="text-lg font-bold text-[#9C27B0] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <BookOpen className="w-5 h-5" /> Disciplinas da Grade
               </h3>
+              
+              <p className="text-sm text-gray-400 font-medium mb-6 ml-1">
+                Clique nas matérias que farão parte desta turma:
+              </p>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                
-                {/* Professor Responsável */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-500 ml-2">Professor(a) Regente</label>
-                  <div className="relative">
-                    <select className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#00E5FF] text-gray-600 rounded-2xl py-3 px-4 outline-none transition-all font-medium h-12 appearance-none cursor-pointer">
-                      <option value="" disabled selected>Selecione um professor...</option>
-                      <option>Tia Ana (Maternal)</option>
-                      <option>Prof. Bruno (Inglês)</option>
-                      <option>Tia Carol (Coordenação)</option>
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <ChevronLeft className="w-4 h-4 text-gray-400 -rotate-90" />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {availableSubjects.map((subject) => {
+                  const isSelected = selectedSubjects.includes(subject.id)
+                  
+                  return (
+                    <div 
+                      key={subject.id}
+                      onClick={() => toggleSubject(subject.id)}
+                      className={`
+                        cursor-pointer rounded-2xl border-2 p-4 flex items-center justify-between transition-all duration-200 select-none
+                        ${isSelected 
+                          ? `${subject.color} shadow-md scale-105 font-bold` 
+                          : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200 hover:bg-gray-50'
+                        }
+                      `}
+                    >
+                      <span>{subject.name}</span>
+                      {isSelected && (
+                        <div className="bg-white/20 rounded-full p-1">
+                          <Check className="w-4 h-4" strokeWidth={3} />
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
-
-                {/* Turno */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-500 ml-2">Turno</label>
-                  <div className="flex gap-4">
-                    <label className="flex-1 cursor-pointer">
-                      <input type="radio" name="turno" className="peer sr-only" />
-                      <div className="rounded-2xl border-2 border-gray-100 bg-[#FAFAFA] p-3 text-center text-gray-500 font-bold peer-checked:border-[#00E5FF] peer-checked:text-[#00E5FF] peer-checked:bg-[#00E5FF]/5 transition-all flex items-center justify-center gap-2">
-                        <Clock className="w-4 h-4" /> Manhã
-                      </div>
-                    </label>
-                    <label className="flex-1 cursor-pointer">
-                      <input type="radio" name="turno" className="peer sr-only" />
-                      <div className="rounded-2xl border-2 border-gray-100 bg-[#FAFAFA] p-3 text-center text-gray-500 font-bold peer-checked:border-[#00E5FF] peer-checked:text-[#00E5FF] peer-checked:bg-[#00E5FF]/5 transition-all flex items-center justify-center gap-2">
-                        <Clock className="w-4 h-4" /> Tarde
-                      </div>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Capacidade Máxima */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-500 ml-2">Capacidade Máxima</label>
-                  <div className="relative">
-                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input 
-                      type="number" 
-                      placeholder="Ex: 20"
-                      className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#00E5FF] text-gray-600 rounded-2xl py-3 pl-12 pr-4 outline-none transition-all font-medium h-12"
-                    />
-                  </div>
-                </div>
-
-                {/* Sala */}
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-500 ml-2">Sala / Local</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input 
-                      type="text" 
-                      placeholder="Ex: Sala 04 - Bloco Azul"
-                      className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#00E5FF] text-gray-600 rounded-2xl py-3 pl-12 pr-4 outline-none transition-all font-medium h-12"
-                    />
-                  </div>
-                </div>
-
+                  )
+                })}
+              </div>
+              
+              {/* Contador de Selecionados */}
+              <div className="mt-4 text-right">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">
+                  {selectedSubjects.length} disciplinas selecionadas
+                </span>
               </div>
             </div>
 
@@ -169,7 +155,7 @@ export default function CreateClassPage() {
                 </Button>
               </Link>
               
-              <Button className="w-full md:w-auto h-14 px-10 rounded-full bg-[#FDC12D] hover:bg-[#ffa000] text-[#3F3D56] font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+              <Button className="w-full md:w-auto h-14 px-12 rounded-full bg-[#FDC12D] hover:bg-[#ffa000] text-[#3F3D56] font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
                 <Save className="mr-2 w-5 h-5" />
                 Salvar Turma
               </Button>
