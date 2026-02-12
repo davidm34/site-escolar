@@ -1,4 +1,4 @@
-const TurmasModel = require('../models/turmas.models');
+const TurmasModel = require('../models/turmas.model');
 
 const TurmasController = {
 

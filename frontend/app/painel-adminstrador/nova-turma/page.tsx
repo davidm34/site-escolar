@@ -6,13 +6,15 @@ import {
   BookOpen, 
   Save, 
   Sparkles,
-  Check
+  Check,
+  Loader2 // Ícone de carregamento
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { useRouter } from "next/navigation" // Para redirecionar após sucesso
 
-// Lista de Disciplinas Disponíveis (Mock)
+// Lista de Disciplinas Disponíveis 
 const availableSubjects = [
   { id: 1, name: "Português", color: "bg-blue-100 text-blue-600 border-blue-200" },
   { id: 2, name: "Matemática", color: "bg-red-100 text-red-600 border-red-200" },
@@ -29,9 +31,16 @@ const availableSubjects = [
 ]
 
 export default function CreateClassPage() {
-  // Estado para gerenciar as disciplinas selecionadas
+  const router = useRouter()
+  
+  // Estados do Formulário
+  const [className, setClassName] = useState("")
   const [selectedSubjects, setSelectedSubjects] = useState<number[]>([])
+  
+  // Estados de Controle
+  const [isLoading, setIsLoading] = useState(false)
 
+  // Função para selecionar/deselecionar disciplinas
   const toggleSubject = (id: number) => {
     setSelectedSubjects(prev => 
       prev.includes(id) 
@@ -40,14 +49,62 @@ export default function CreateClassPage() {
     )
   }
 
+  // Função de Envio (POST)
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!className || selectedSubjects.length === 0) {
+    alert("Preencha tudo");
+    return;
+  }
+
+  setIsLoading(true);
+
+  const token = localStorage.getItem('@Escola:token');
+
+  console.log(token)
+
+  const payload = {
+    nome: className,
+    disciplinas: selectedSubjects
+  };
+
+  try {
+    const response = await fetch('http://localhost:3001/turmas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Turma criada com sucesso!");
+      router.push('/painel-administrador');
+    } else {
+      alert(data.erro || "Erro ao criar turma");
+    }
+
+    } catch (error) {
+      console.error(error);
+      alert("Erro de conexão");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka p-6 pb-20 relative overflow-hidden flex flex-col items-center">
       
-      {/* --- DECORAÇÃO DE FUNDO --- */}
+      {/* Decoração de Fundo */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#FDC12D]/10 rounded-full blur-3xl z-0" />
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#9C27B0]/10 rounded-full blur-3xl z-0" />
 
-      {/* --- CABEÇALHO DE NAVEGAÇÃO --- */}
+      {/* Cabeçalho */}
       <div className="w-full max-w-4xl z-10 flex items-center justify-between mb-8">
         <Link href="/painel-adminstrador">
           <Button variant="ghost" className="text-[#3F3D56] hover:bg-white/50 hover:text-[#9C27B0] font-bold rounded-full gap-2 pl-2">
@@ -59,10 +116,8 @@ export default function CreateClassPage() {
         </Link>
       </div>
 
-      {/* --- CONTEÚDO PRINCIPAL --- */}
       <div className="w-full max-w-4xl z-10">
         
-        {/* Título da Página */}
         <div className="flex items-center gap-4 mb-8 pl-4">
           <div className="w-16 h-16 bg-[#FDC12D] rounded-[24px] flex items-center justify-center shadow-lg transform -rotate-6">
             <Users className="w-8 h-8 text-white" strokeWidth={2.5} />
@@ -77,14 +132,14 @@ export default function CreateClassPage() {
           </div>
         </div>
 
-        {/* --- FORMULÁRIO (CARD) --- */}
+        {/* Formulário */}
         <div className="bg-white p-8 md:p-10 rounded-[40px] shadow-xl border-b-[8px] border-[#FDC12D] relative">
           
           <Sparkles className="absolute top-8 right-8 w-8 h-8 text-[#FDC12D] opacity-50 animate-pulse hidden md:block" />
 
-          <form className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
             
-            {/* CAMPO 1: NOME DA TURMA */}
+            {/* Campo Nome */}
             <div>
               <h3 className="text-lg font-bold text-[#FDC12D] uppercase tracking-wider mb-4 flex items-center gap-2">
                 <Users className="w-5 h-5" /> Identificação
@@ -94,15 +149,18 @@ export default function CreateClassPage() {
                 <label className="text-sm font-bold text-gray-500 ml-2">Nome da Turma</label>
                 <input 
                   type="text" 
+                  value={className}
+                  onChange={(e) => setClassName(e.target.value)}
                   placeholder="Ex: Maternal II - B (Manhã)"
                   className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#FDC12D] text-gray-600 rounded-2xl py-4 px-6 outline-none transition-all font-medium text-lg h-16"
+                  required
                 />
               </div>
             </div>
 
             <hr className="border-gray-100 dashed" />
 
-            {/* CAMPO 2: DISCIPLINAS (SELEÇÃO MÚLTIPLA) */}
+            {/* Campo Disciplinas */}
             <div>
               <h3 className="text-lg font-bold text-[#9C27B0] uppercase tracking-wider mb-4 flex items-center gap-2">
                 <BookOpen className="w-5 h-5" /> Disciplinas da Grade
@@ -139,7 +197,6 @@ export default function CreateClassPage() {
                 })}
               </div>
               
-              {/* Contador de Selecionados */}
               <div className="mt-4 text-right">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">
                   {selectedSubjects.length} disciplinas selecionadas
@@ -147,7 +204,7 @@ export default function CreateClassPage() {
               </div>
             </div>
 
-            {/* BOTÕES DE AÇÃO */}
+            {/* Botões */}
             <div className="pt-6 flex flex-col-reverse md:flex-row gap-4 justify-end">
               <Link href="/painel-adminstrador" className="w-full md:w-auto">
                 <Button variant="ghost" type="button" className="w-full h-14 rounded-full text-gray-400 font-bold hover:bg-gray-100 text-lg">
@@ -155,9 +212,22 @@ export default function CreateClassPage() {
                 </Button>
               </Link>
               
-              <Button className="w-full md:w-auto h-14 px-12 rounded-full bg-[#FDC12D] hover:bg-[#ffa000] text-[#3F3D56] font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
-                <Save className="mr-2 w-5 h-5" />
-                Salvar Turma
+              <Button 
+                type="submit" 
+                disabled={isLoading}
+                className="w-full md:w-auto h-14 px-12 rounded-full bg-[#FDC12D] hover:bg-[#ffa000] text-[#3F3D56] font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 w-5 h-5" />
+                    Salvar Turma
+                  </>
+                )}
               </Button>
             </div>
 
