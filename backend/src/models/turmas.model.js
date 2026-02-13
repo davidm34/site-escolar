@@ -4,11 +4,29 @@ const TurmasModel = {
 
     // Criar turma
     criarTurma: async (nome) => {
-        const res = await db.query(
-            'INSERT INTO turmas (nome) VALUES ($1) RETURNING *',
-            [nome]
-        );
-        return res.rows[0];
+        try {
+            const existe = await db.query(
+                'SELECT id FROM turmas WHERE nome = $1',
+                [nome]
+            );
+
+            if (existe.rows.length > 0) {
+                // Lança um erro customizado que será capturado pelo catch
+                const erroCustomizado = new Error('Já existe uma turma cadastrada com este nome.');
+                erroCustomizado.code = 'VALOR_DUPLICADO'; 
+                throw erroCustomizado;
+            }
+
+            const res = await db.query(
+                'INSERT INTO turmas (nome) VALUES ($1) RETURNING *',
+                [nome]
+            );
+            
+            return res.rows[0];
+        } catch (error) {
+            console.log("ERRO DENTRO DO MODEL:", error.message);
+            throw error;
+        }
     },
 
     // Listar todas as turmas
@@ -23,6 +41,11 @@ const TurmasModel = {
             'SELECT * FROM turmas WHERE id = $1',
             [id]
         );
+        return res.rows[0];
+    },
+
+    buscarPorNome: async (nome) => {
+        const res = await db.query('SELECT * FROM turmas WHERE nome = $1', [nome]);
         return res.rows[0];
     },
 

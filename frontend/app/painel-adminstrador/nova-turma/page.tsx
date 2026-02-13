@@ -31,68 +31,57 @@ const availableSubjects = [
 ]
 
 export default function CreateClassPage() {
-  const router = useRouter()
-  
-  // Estados do Formulário
-  const [className, setClassName] = useState("")
-  const [selectedSubjects, setSelectedSubjects] = useState<number[]>([])
-  
-  // Estados de Controle
-  const [isLoading, setIsLoading] = useState(false)
+const router = useRouter();
+  const [nomeTurma, setNomeTurma] = useState(""); // Estado para o nome
+  const [selectedSubjects, setSelectedSubjects] = useState<{id: number, nome: string}[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // Função para selecionar/deselecionar disciplinas
-  const toggleSubject = (id: number) => {
-    setSelectedSubjects(prev => 
-      prev.includes(id) 
-        ? prev.filter(subjectId => subjectId !== id) 
-        : [...prev, id]
-    )
-  }
-
-  // Função de Envio (POST)
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!className || selectedSubjects.length === 0) {
-    alert("Preencha tudo");
-    return;
-  }
-
-  setIsLoading(true);
-
-  const token = localStorage.getItem('@Escola:token');
-
-  console.log(token)
-
-  const payload = {
-    nome: className,
-    disciplinas: selectedSubjects
+  const toggleSubject = (id: number, nome: string) => {
+    setSelectedSubjects(prev => {
+      const isSelected = prev.find(subject => subject.id === id);
+      
+      if (isSelected) {
+        // Se já existe, remove da lista
+        return prev.filter(subject => subject.id !== id);
+      } else {
+        // Se não existe, adiciona o objeto completo
+        return [...prev, { id, nome }];
+      }
+    });
   };
 
-  try {
-    const response = await fetch('http://localhost:3001/turmas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-    const data = await response.json();
+    const token = localStorage.getItem("@Escola:token");
 
-    if (response.ok) {
-      alert("Turma criada com sucesso!");
-      router.push('/painel-administrador');
-    } else {
-      alert(data.erro || "Erro ao criar turma");
-    }
+    console.log(selectedSubjects)
 
+    try {
+      const response = await fetch("http://localhost:3001/turmas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // Garante o envio do token
+        },
+        body: JSON.stringify({ 
+          nome: nomeTurma, 
+          disciplinas: selectedSubjects 
+        }),
+      });
+
+      if (response.ok) {
+        alert("Turma criada com sucesso!");
+        router.push("/painel-adminstrador");
+      } else {
+        const errorData = await response.json();
+        alert(errorData.erro || "Erro ao criar turma");
+      }
     } catch (error) {
-      console.error(error);
-      alert("Erro de conexão");
+      alert("Erro de conexão com o servidor");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -149,8 +138,8 @@ export default function CreateClassPage() {
                 <label className="text-sm font-bold text-gray-500 ml-2">Nome da Turma</label>
                 <input 
                   type="text" 
-                  value={className}
-                  onChange={(e) => setClassName(e.target.value)}
+                  value={nomeTurma}
+                  onChange={(e) => setNomeTurma(e.target.value)}
                   placeholder="Ex: Maternal II - B (Manhã)"
                   className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#FDC12D] text-gray-600 rounded-2xl py-4 px-6 outline-none transition-all font-medium text-lg h-16"
                   required
@@ -172,12 +161,12 @@ export default function CreateClassPage() {
 
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {availableSubjects.map((subject) => {
-                  const isSelected = selectedSubjects.includes(subject.id)
+                  const isSelected = selectedSubjects.some(s => s.id === subject.id);
                   
                   return (
                     <div 
                       key={subject.id}
-                      onClick={() => toggleSubject(subject.id)}
+                      onClick={() => toggleSubject(subject.id, subject.name)}
                       className={`
                         cursor-pointer rounded-2xl border-2 p-4 flex items-center justify-between transition-all duration-200 select-none
                         ${isSelected 
@@ -214,10 +203,10 @@ export default function CreateClassPage() {
               
               <Button 
                 type="submit" 
-                disabled={isLoading}
+                disabled={loading}
                 className="w-full md:w-auto h-14 px-12 rounded-full bg-[#FDC12D] hover:bg-[#ffa000] text-[#3F3D56] font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {isLoading ? (
+                {loading ? (
                   <>
                     <Loader2 className="mr-2 w-5 h-5 animate-spin" />
                     Salvando...

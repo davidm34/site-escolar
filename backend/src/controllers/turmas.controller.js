@@ -6,23 +6,42 @@ const TurmasController = {
         try {
             const { nome, disciplinas } = req.body;
 
-            // cria turma
-            const turma = await TurmasModel.criarTurma(nome);
+            if (!nome) {
+                return res.status(400).json({ erro: 'O nome da turma é obrigatório' });
+            }
 
-            // adiciona disciplinas 
+            // 1. Verifica se a turma já existe
+            let turma = await TurmasModel.buscarPorNome(nome);
+
+            // 2. Se não existir, cria (isso evita incrementar o ID à toa se já existir)
+            if (!turma) {
+                turma = await TurmasModel.criarTurma(nome);
+                console.log("Nova turma criada com ID:", turma.id);
+            } else {
+                console.log("Turma já existente encontrada com ID:", turma.id);
+            }
+
+            // 3. Adiciona as disciplinas (o Model já ignora se já estiverem lá)
             if (disciplinas && disciplinas.length > 0) {
                 for (const disciplina_id of disciplinas) {
-                    await TurmasModel.adicionarDisciplina(turma.id, disciplina_id);
+                    // Aqui você pode passar apenas o ID se o frontend enviar [1, 2] 
+                    // ou disciplina_id.id se enviar objetos [{id: 1, nome: '... '}]
+                    const d_id = typeof disciplina_id === 'object' ? disciplina_id.id : disciplina_id;
+                    await TurmasModel.adicionarDisciplina(turma.id, d_id);
                 }
             }
 
+            // 4. Busca a lista atualizada de disciplinas para confirmar o que está no banco
+            const disciplinasFinais = await TurmasModel.listarDisciplinasDaTurma(turma.id);
+
             res.status(201).json({
                 ...turma,
-                disciplinas
+                disciplinas: disciplinasFinais
             });
 
         } catch (err) {
-            res.status(500).json({ erro: 'Erro ao criar turma' });
+            console.error("Erro na operação:", err);
+            res.status(500).json({ erro: 'Erro ao processar turma e disciplinas' });
         }
     },
 
