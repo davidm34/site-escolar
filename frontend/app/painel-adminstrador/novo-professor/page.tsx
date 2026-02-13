@@ -16,9 +16,6 @@ import { Button } from "@/components/ui/button"
 export default function CreateTeacherPage() {
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka p-6 pb-20 relative overflow-hidden flex flex-col items-center">
-      
-      {/* --- DECORAÇÃO DE FUNDO --- */}
-      {/* Bolhas focadas no Ciano (Tema Professor) */}
       <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-[#00E5FF]/10 rounded-full blur-3xl z-0" />
       <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 bg-[#E91E63]/10 rounded-full blur-3xl z-0" />
 
@@ -98,11 +95,17 @@ export default function CreateTeacherPage() {
                     <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <select className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#E91E63] text-gray-600 rounded-2xl py-3 pl-12 pr-4 outline-none transition-all font-medium h-12 appearance-none cursor-pointer">
                       <option value="" disabled selected>Selecione...</option>
-                      <option>Polivalente (Pedagogia)</option>
+                      <option>Ensino Infantil</option>
+                      <option>Português</option>
+                      <option>Matemática</option>
+                      <option>História</option>
+                      <option>Ciências</option>
+                      <option>Redação</option>
                       <option>Inglês</option>
+                      <option>Espanhol</option>
                       <option>Educação Física</option>
+                      <option>Educação Financeira e Empreendedorismo</option>
                       <option>Artes</option>
-                      <option>Música</option>
                     </select>
                   </div>
                 </div>
@@ -119,6 +122,13 @@ export default function CreateTeacherPage() {
                             <option>7° ano</option>
                             <option>6° ano</option>
                             <option>5° ano</option>
+                            <option>4° ano</option>
+                            <option>3° ano</option>
+                            <option>2° ano</option>
+                            <option>1° ano</option>
+                            <option>2° Periodo</option>
+                            <option>1° Periodo</option>
+                            <option>Maternal</option>
                         </select>
                     </div>
                 </div>

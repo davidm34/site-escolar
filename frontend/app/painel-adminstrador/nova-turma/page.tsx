@@ -31,7 +31,7 @@ const availableSubjects = [
 ]
 
 export default function CreateClassPage() {
-const router = useRouter();
+  const router = useRouter();
   const [nomeTurma, setNomeTurma] = useState(""); // Estado para o nome
   const [selectedSubjects, setSelectedSubjects] = useState<{id: number, nome: string}[]>([]);
   const [loading, setLoading] = useState(false);
