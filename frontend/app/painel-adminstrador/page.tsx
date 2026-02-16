@@ -13,7 +13,6 @@ import {
   Briefcase
 } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react";
 
@@ -34,7 +33,7 @@ const stats = [
 // Menu de Cadastros (Adicionar)
 const registrationMenu = [
   {
-    title: "Novo Aluno",
+    title: "Gerenciar Alunos",
     icon: UserPlus,
     description: "Matricular estudante",
     color: "text-[#E91E63]",
@@ -42,7 +41,7 @@ const registrationMenu = [
     link: "/painel-adminstrador/novo-aluno"
   },
   {
-    title: "Novo Professor",
+    title: "Gerenciar Professores",
     icon: UserPlus,
     description: "Cadastrar docente",
     color: "text-[#00E5FF]",
@@ -156,7 +155,7 @@ export default function AdminDashboard() {
           <div className="lg:col-span-1 space-y-6">
             <h3 className="text-xl font-bold text-[#3F3D56] flex items-center gap-2">
               <Settings className="w-5 h-5 text-[#9C27B0]" /> 
-              Cadastros
+              Gerenciamento
             </h3>
             
             <div className="grid gap-4">
