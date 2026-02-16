@@ -15,28 +15,32 @@ const Models = {
     },
 
     // Criar usuário completo (com transação)
-    addUsuarioCompleto: async (nome, cargo, login, senha) => {
-        const client = await db.pool.connect();
+    addUsuarioCompleto: async (nome, cargo, login, senhaHashed, clientExterno = null) => {
+        // Se recebeu um client, usa ele. Se não, pega um novo do pool.
+        const client = clientExterno || await db.pool.connect();
 
         try {
-            await client.query('BEGIN');
+            // Só inicia transação se não for um client vindo de fora
+            if (!clientExterno) await client.query('BEGIN');
 
-            // 1️⃣ Insere em usuarios
             const userRes = await client.query(
                 `INSERT INTO usuarios (nome_completo, cargo, login, senha)
-                 VALUES ($1, $2, $3, $4)
-                 RETURNING id`,
-                [nome, cargo, login, senha]
+                VALUES ($1, $2, $3, $4)
+                RETURNING id`,
+                [nome, cargo, login, senhaHashed]
             );
 
             const userId = userRes.rows[0].id;
 
-            return userId
+            if (!clientExterno) await client.query('COMMIT');
+            
+            return { id: userId }; // Retorna o objeto com o ID
         } catch (err) {
-            await client.query('ROLLBACK');
+            if (!clientExterno) await client.query('ROLLBACK');
             throw err;
         } finally {
-            client.release();
+            // Só libera o client se ele foi criado aqui dentro
+            if (!clientExterno) client.release();
         }
     },
 
@@ -84,22 +88,21 @@ const Models = {
 
     createProfessor: async (nome, login, senha, disciplinas, turmas) => {
         const client = await db.pool.connect();
-
         try {
-            const id = await client.addUsuarioCompleto(nome, 'professor', login, senha)
             await client.query('BEGIN');
 
-          
+            // Passamos o 'client' como o 5º argumento para manter a mesma transação
+            const usuario = await Models.addUsuarioCompleto(nome, 'professor', login, senha, client);
+            const id = usuario.id;
+
             await client.query(
-                `INSERT INTO professores (usuario_id) 
-                VALUES ($1, $2)
-                RETURNING id`,
-                [disciplinas, turmas]
+                `INSERT INTO professores (usuario_id, disciplina_id, turma_id) 
+                VALUES ($1, $2, $3)`,
+                [id, disciplinas, turmas]
             );
 
             await client.query('COMMIT');
-
-            return id
+            return id;
         } catch (err) {
             await client.query('ROLLBACK');
             throw err;

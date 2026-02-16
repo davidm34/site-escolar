@@ -6,6 +6,8 @@ module.exports = {
         try {
             const { nome, disciplinas, turmas } = req.body;
 
+            console.log(req.body)
+
             if (!nome) {
                 return res.status(400).json({ erro: 'O nome é obrigatório para gerar as credenciais.' });
             }
@@ -17,16 +19,22 @@ module.exports = {
 
             const loginFinal = `${loginBase}${Math.floor(100 + Math.random() * 900)}`;
 
-            const senhaInicial = `${partesNome[0]}2026`; 
+            const caracteres = 'abcdefghijkmnopqrstuvwxyz23456789';
+            let senhaAleatoria = '';
+            const tamanhoSenha = 6; // Você pode mudar para 5 se preferir
+        
+            for (let i = 0; i < tamanhoSenha; i++) {
+                senhaAleatoria += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+            }
 
-            const resultado = await Models.createProfessor(nome, loginFinal, senhaInicial, disciplinas, turmas);
+            const resultado = await Models.createProfessor(nome, loginFinal, senhaAleatoria, disciplinas, turmas);
 
             // Retorna sucesso com as credenciais para o Admin copiar
             res.status(201).json({
                 mensagem: 'Professor cadastrado com sucesso!',
                 acesso: {
                     login: loginFinal,
-                    senha: senhaInicial
+                    senha: senhaAleatoria
                 },
                 detalhes: resultado
             });
