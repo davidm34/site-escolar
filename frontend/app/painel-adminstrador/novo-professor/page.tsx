@@ -9,53 +9,66 @@ import {
   Trash2,
   BookOpen,
   MapPin,
-  Sparkles
+  Sparkles,
+  Loader2 // Adicionado para o ícone de carregando
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CreateTeacherModal } from "@/components/CreateTeacherModal"
 
-// Dados Fictícios dos Professores (Mock)
-const teachersList = [
-  {
-    id: 1,
-    name: "Prof. Bruno Lima",
-    avatar: "B",
-    subjects: ["Inglês", "Música"],
-    classes: ["1º Ano A", "2º Ano B", "3º Ano A"],
-  },
-  {
-    id: 2,
-    name: "Tia Ana Clara",
-    avatar: "A",
-    subjects: ["Polivalente"],
-    classes: ["Maternal I", "Maternal II"],
-  },
-  {
-    id: 3,
-    name: "Tio Marcos",
-    avatar: "M",
-    subjects: ["Educação Física"],
-    classes: ["1º Ano A", "2º Ano B", "4º Ano A", "5º Ano B"],
-  },
-  {
-    id: 4,
-    name: "Tia Carol",
-    avatar: "C",
-    subjects: ["Artes"],
-    classes: ["Maternal II", "Jardim I", "Jardim II"],
-  }
-]
+// Interface baseada no retorno da sua API
+interface Professor {
+  id: number;
+  nome: string;
+  disciplina: string;
+  turma: string;
+}
+
 
 export default function ManageTeachersPage() {
+  // Estados para gerenciar os dados, carregamento e erros
+  const [professores, setProfessores] = useState<Professor[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleSuccess = () => {
-    // Aqui você pode colocar a função para dar um "fetch" novamente 
-    // e recarregar a lista de professores do seu backend
     console.log("Professor criado, atualizando lista...")
   }
+
+  // useEffect para buscar os dados ao carregar a página
+  useEffect(() => {
+    const fetchProfessores = async () => {
+      setIsLoading(true)
+      const token = localStorage.getItem("@Escola:token")
+
+      try {
+        const response = await fetch("http://localhost:3001/professores", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` // Incluindo o token por segurança
+          }
+        })
+
+        console.log(response)
+
+        if (response.ok) {
+          const data = await response.json()
+          setProfessores(data)
+        } else {
+          setError("Não foi possível carregar a lista de professores.")
+        }
+      } catch (err) {
+        setError("Erro de conexão com o servidor.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProfessores()
+  }, []) // O array vazio garante que rode apenas 1 vez ao abrir a tela
 
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka p-6 pb-20 relative overflow-hidden flex flex-col items-center">
@@ -117,93 +130,100 @@ export default function ManageTeachersPage() {
           </div>
         </div>
 
+        {/* ESTADOS DE CARREGAMENTO E ERRO */}
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-12 h-12 text-[#00E5FF] animate-spin mb-4" />
+            <p className="text-[#3F3D56] font-bold text-lg">Buscando professores...</p>
+          </div>
+        )}
+
+        {error && !isLoading && (
+          <div className="bg-red-50 text-red-500 p-6 rounded-3xl text-center font-bold border-2 border-red-100">
+            {error}
+          </div>
+        )}
+
+        {!isLoading && !error && professores.length === 0 && (
+          <div className="bg-white p-10 rounded-3xl text-center shadow-sm border-2 border-gray-100">
+            <p className="text-gray-500 font-bold text-lg">Nenhum professor cadastrado ainda.</p>
+          </div>
+        )}
+
         {/* --- GRID DE PROFESSORES --- */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          
-          {teachersList.map((teacher) => (
-            <div key={teacher.id} className="bg-white rounded-[35px] p-6 shadow-md hover:shadow-xl transition-all duration-300 border-b-[6px] border-[#00E5FF] relative group flex flex-col h-full">
-              
-              <Sparkles className="absolute top-4 right-4 w-5 h-5 text-[#00E5FF] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              {/* Cabeçalho do Card (Foto e Nome) */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-full bg-[#00E5FF]/10 border-2 border-[#00E5FF] flex items-center justify-center text-[#00E5FF] font-bold text-xl shrink-0">
-                  {teacher.avatar}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-[#3F3D56] leading-tight">{teacher.name}</h3>
-                </div>
-              </div>
-
-              {/* Corpo do Card (Disciplinas e Turmas) */}
-              <div className="space-y-4 flex-grow">
+        {!isLoading && !error && professores.length > 0 && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {professores.map((teacher) => (
+              <div key={teacher.id} className="bg-white rounded-[35px] p-6 shadow-md hover:shadow-xl transition-all duration-300 border-b-[6px] border-[#00E5FF] relative group flex flex-col h-full">
                 
-                {/* Disciplinas */}
-                <div>
-                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wide flex items-center gap-1 mb-2">
-                    <BookOpen className="w-3 h-3" /> Disciplinas
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {teacher.subjects.map(subject => (
-                      <span key={subject} className="bg-[#00E5FF]/10 text-[#00E5FF] px-3 py-1 rounded-md text-xs font-bold">
-                        {subject}
-                      </span>
-                    ))}
+                <Sparkles className="absolute top-4 right-4 w-5 h-5 text-[#00E5FF] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                {/* Cabeçalho do Card (Foto e Nome) */}
+                <div className="flex items-center gap-4 mb-6">
+                  {/* AVATAR: Pegando a primeira letra do nome e deixando maiúscula */}
+                  <div className="w-14 h-14 rounded-full bg-[#00E5FF]/10 border-2 border-[#00E5FF] flex items-center justify-center text-[#00E5FF] font-bold text-2xl shrink-0 uppercase">
+                    {teacher.nome.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-[#3F3D56] leading-tight">{teacher.nome}</h3>
+                    <p className="text-xs text-gray-400 font-bold mt-1 uppercase tracking-wide">ID: {teacher.id}</p>
                   </div>
                 </div>
 
-                {/* Turmas */}
-                <div>
-                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wide flex items-center gap-1 mb-2">
-                    <MapPin className="w-3 h-3" /> Turmas Atendidas
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {teacher.classes.map(cls => (
-                      <span key={cls} className="bg-[#FDC12D]/10 text-[#FDC12D] border border-[#FDC12D]/20 px-3 py-1 rounded-md text-xs font-bold">
-                        {cls}
-                      </span>
-                    ))}
+                {/* Corpo do Card (Disciplinas e Turmas) */}
+                <div className="space-y-4 flex-grow">
+                  
+                  {/* Disciplina */}
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wide flex items-center gap-1 mb-2">
+                      <BookOpen className="w-3 h-3" /> Disciplina
+                    </h4>
+                    <span className="inline-block bg-[#00E5FF]/10 text-[#00E5FF] px-3 py-1 rounded-md text-sm font-bold">
+                      {teacher.disciplina}
+                    </span>
                   </div>
+
+                  {/* Turma */}
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wide flex items-center gap-1 mb-2">
+                      <MapPin className="w-3 h-3" /> Turma Atendida
+                    </h4>
+                    <span className="inline-block bg-[#FDC12D]/10 text-[#FDC12D] border border-[#FDC12D]/20 px-3 py-1 rounded-md text-sm font-bold">
+                      {teacher.turma}
+                    </span>
+                  </div>
+
+                </div>
+
+                {/* Rodapé do Card (Botões de Ação) */}
+                <div className="mt-6 pt-4 border-t border-gray-100 flex gap-3">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 rounded-xl border-gray-200 text-gray-500 hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[#00E5FF]/5 font-bold h-10"
+                  >
+                    <Edit className="w-4 h-4 mr-2" /> Editar
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 rounded-xl border-gray-200 text-gray-500 hover:text-[#E91E63] hover:border-[#E91E63] hover:bg-[#E91E63]/5 font-bold h-10"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" /> Remover
+                  </Button>
                 </div>
 
               </div>
-
-              {/* Rodapé do Card (Botões de Ação) */}
-              <div className="mt-6 pt-4 border-t border-gray-100 flex gap-3">
-                <Button 
-                  variant="outline" 
-                  className="flex-1 rounded-xl border-gray-200 text-gray-500 hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[#00E5FF]/5 font-bold h-10"
-                >
-                  <Edit className="w-4 h-4 mr-2" /> Editar
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="flex-1 rounded-xl border-gray-200 text-gray-500 hover:text-[#E91E63] hover:border-[#E91E63] hover:bg-[#E91E63]/5 font-bold h-10"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" /> Remover
-                </Button>
-              </div>
-
-            </div>
-          ))}
-
-        </div>
+            ))}
+          </div>
+        )}
 
         <CreateTeacherModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={handleSuccess}
-      />
-
-        {/* Paginação Mockada (Caso a lista cresça muito) */}
-        <div className="mt-10 flex justify-center">
-          <Button variant="ghost" className="text-[#00E5FF] font-bold hover:bg-[#00E5FF]/10 rounded-full">
-            Carregar mais professores...
-          </Button>
-        </div>
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          onSuccess={handleSuccess}
+        />
 
       </div>
     </div>
   )
-}   
+}

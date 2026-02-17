@@ -1,4 +1,5 @@
 const Models = require('../models/models');
+const TurmasModel = require('../models/turmas.model')
 
 module.exports = {
     
@@ -47,9 +48,29 @@ module.exports = {
     
     async listar(req, res) {
         try {
-            const professores = await Models.getProfessores();
-            res.json(professores);
+            const professoresRaw = await Models.getProfessores();
+            
+            const professoresCompletos = [];
+            
+            for (const professor of professoresRaw) {
+                
+                const disciplinaData = await Models.disciplinasProfessor(professor.id);
+                
+                const turmaData = await Models.turmasProfessor(professor.id);
+                
+                
+                professoresCompletos.push({
+                    id: professor.id,
+                    nome: professor.nome_completo,
+                    disciplina: disciplinaData?.nome || 'Não atribuída',
+                    turma: turmaData?.nome || 'Não atribuída'
+                });
+            }
+            
+            res.json(professoresCompletos);
+
         } catch (err) {
+            console.error("Erro na função listar:", err);
             res.status(500).json({ erro: 'Erro ao listar professores' });
         }
     },

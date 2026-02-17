@@ -44,6 +44,21 @@ const Models = {
         }
     },
 
+    getUsuarioById: async (id) => {
+        try {
+            const res = await db.query(
+                'SELECT id, nome_completo, cargo, login FROM usuarios WHERE id = $1',
+                [id]
+            );
+            
+            // Retorna o utilizador se encontrado, ou undefined se não existir
+            return res.rows[0]; 
+        } catch (err) {
+            console.error("Erro ao buscar utilizador por ID:", err.message);
+            throw err;
+        }
+    },
+
     /* ===============================
        ALUNOS
     ================================ */
@@ -125,6 +140,35 @@ const Models = {
             'DELETE FROM usuarios WHERE id = $1',
             [id]
         );
+    },
+
+    disciplinasProfessor: async (id) => {
+        // Primeiro, pega o disciplina_id do professor
+        const result = await db.query('SELECT disciplina_id FROM professores WHERE usuario_id = $1', [id]);
+        
+        if (result.rows.length === 0) {
+            return null;
+        }
+        
+        const disciplinaId = result.rows[0].disciplina_id;
+        
+        const disciplina = await db.query('SELECT nome FROM disciplinas WHERE id = $1', [disciplinaId]);
+        
+        return disciplina.rows[0]; 
+    },
+
+    turmasProfessor: async(id) => {
+        const result = await db.query('SELECT turma_id FROM professores WHERE usuario_id = $1', [id]);
+
+         if (result.rows.length === 0) {
+            return null;
+        }
+
+        const turmaId = result.rows[0].turma_id;
+
+        const turma = await db.query('SELECT nome FROM turmas WHERE id = $1', [turmaId]);
+
+        return turma.rows[0];
     },
 
     /* ===============================
