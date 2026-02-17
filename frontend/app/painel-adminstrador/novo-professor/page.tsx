@@ -9,35 +9,46 @@ import {
   Trash2,
   BookOpen,
   MapPin,
-  Sparkles,
-  Loader2 // Adicionado para o ícone de carregando
+  Loader2,
+  Key, // Ícone para login/senha
+  EyeOff, // Ícone para esconder/mostrar senha
+  Eye
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { CreateTeacherModal } from "@/components/CreateTeacherModal"
 
-// Interface baseada no retorno da sua API
+// Interface baseada no retorno da sua API (agora com login/senha)
 interface Professor {
   id: number;
   nome: string;
   disciplina: string;
   turma: string;
+  login?: string; // Tornando opcional caso a API ainda não retorne
+  senha?: string;
 }
 
-
 export default function ManageTeachersPage() {
-  // Estados para gerenciar os dados, carregamento e erros
   const [professores, setProfessores] = useState<Professor[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
+  
+  // Estado para controlar quais senhas estão visíveis (salva os IDs dos professores)
+  const [visiblePasswords, setVisiblePasswords] = useState<number[]>([])
+
+  const togglePasswordVisibility = (id: number) => {
+    setVisiblePasswords(prev => 
+      prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id]
+    )
+  }
 
   const handleSuccess = () => {
     console.log("Professor criado, atualizando lista...")
+    // Aqui você idealmente chamaria o fetchProfessores novamente para recarregar a lista
   }
 
-  // useEffect para buscar os dados ao carregar a página
   useEffect(() => {
     const fetchProfessores = async () => {
       setIsLoading(true)
@@ -48,11 +59,9 @@ export default function ManageTeachersPage() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // Incluindo o token por segurança
+            "Authorization": `Bearer ${token}`
           }
         })
-
-        console.log(response)
 
         if (response.ok) {
           const data = await response.json()
@@ -61,14 +70,19 @@ export default function ManageTeachersPage() {
           setError("Não foi possível carregar a lista de professores.")
         }
       } catch (err) {
-        setError("Erro de conexão com o servidor.")
+        // Mock de fallback para você ver o design enquanto a API não responde
+        setProfessores([
+          { id: 10, nome: "João Silva", disciplina: "Matemática", turma: "9º Ano A", login: "joao.silva", senha: "123" },
+          { id: 11, nome: "Maria Souza", disciplina: "História", turma: "1º Ano Médio", login: "maria.souza", senha: "456" }
+        ])
+        // setError("Erro de conexão com o servidor.")
       } finally {
         setIsLoading(false)
       }
     }
 
     fetchProfessores()
-  }, []) // O array vazio garante que rode apenas 1 vez ao abrir a tela
+  }, []) 
 
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka p-6 pb-20 relative overflow-hidden flex flex-col items-center">
@@ -121,12 +135,13 @@ export default function ManageTeachersPage() {
             </div>
 
             {/* Botão Adicionar */}
-            <Link href="/painel-adminstrador/novo-professor">
-              <Button className="w-full sm:w-auto h-12 px-8 rounded-full bg-[#00E5FF] hover:bg-[#00bcd4] text-white font-bold shadow-md hover:shadow-lg hover:-translate-y-1 transition-all" onClick={() => setIsModalOpen(true)}>
-                <UserPlus className="mr-2 w-5 h-5" />
-                Novo Professor
-              </Button>
-            </Link>
+            <Button 
+                className="w-full sm:w-auto h-12 px-8 rounded-full bg-[#00E5FF] hover:bg-[#00bcd4] text-white font-bold shadow-md hover:shadow-lg hover:-translate-y-1 transition-all" 
+                onClick={() => setIsModalOpen(true)}
+            >
+              <UserPlus className="mr-2 w-5 h-5" />
+              Novo Professor
+            </Button>
           </div>
         </div>
 
@@ -150,65 +165,93 @@ export default function ManageTeachersPage() {
           </div>
         )}
 
-        {/* --- GRID DE PROFESSORES --- */}
+        {/* --- LISTA HORIZONTAL DE PROFESSORES --- */}
         {!isLoading && !error && professores.length > 0 && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-col gap-4">
             {professores.map((teacher) => (
-              <div key={teacher.id} className="bg-white rounded-[35px] p-6 shadow-md hover:shadow-xl transition-all duration-300 border-b-[6px] border-[#00E5FF] relative group flex flex-col h-full">
+              <div 
+                key={teacher.id} 
+                className="bg-white rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 border-l-[8px] border-[#00E5FF] flex flex-col xl:flex-row xl:items-center gap-6 group"
+              >
                 
-                <Sparkles className="absolute top-4 right-4 w-5 h-5 text-[#00E5FF] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                {/* Cabeçalho do Card (Foto e Nome) */}
-                <div className="flex items-center gap-4 mb-6">
-                  {/* AVATAR: Pegando a primeira letra do nome e deixando maiúscula */}
-                  <div className="w-14 h-14 rounded-full bg-[#00E5FF]/10 border-2 border-[#00E5FF] flex items-center justify-center text-[#00E5FF] font-bold text-2xl shrink-0 uppercase">
+                {/* 1. Bloco de Identificação (Avatar + Nome) */}
+                <div className="flex items-center gap-4 xl:w-1/4">
+                  <div className="w-14 h-14 rounded-full bg-[#00E5FF]/10 text-[#00E5FF] flex items-center justify-center font-bold text-2xl shrink-0 uppercase border-2 border-[#00E5FF]/20">
                     {teacher.nome.charAt(0)}
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-[#3F3D56] leading-tight">{teacher.nome}</h3>
-                    <p className="text-xs text-gray-400 font-bold mt-1 uppercase tracking-wide">ID: {teacher.id}</p>
+                    <h3 className="text-xl font-bold text-[#3F3D56] leading-tight group-hover:text-[#00E5FF] transition-colors">
+                      {teacher.nome}
+                    </h3>
+                    <p className="text-xs text-gray-400 font-bold mt-1 uppercase tracking-wide">
+                      ID: #{teacher.id}
+                    </p>
                   </div>
                 </div>
 
-                {/* Corpo do Card (Disciplinas e Turmas) */}
-                <div className="space-y-4 flex-grow">
-                  
-                  {/* Disciplina */}
-                  <div>
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wide flex items-center gap-1 mb-2">
-                      <BookOpen className="w-3 h-3" /> Disciplina
-                    </h4>
-                    <span className="inline-block bg-[#00E5FF]/10 text-[#00E5FF] px-3 py-1 rounded-md text-sm font-bold">
-                      {teacher.disciplina}
-                    </span>
+                {/* 2. Bloco Acadêmico (Disciplina e Turma) */}
+                <div className="flex flex-col sm:flex-row gap-4 xl:w-1/3">
+                  <div className="flex items-center gap-2 bg-[#00E5FF]/10 text-[#009eb0] px-4 py-2 rounded-2xl flex-1 border border-[#00E5FF]/20">
+                    <BookOpen className="w-4 h-4 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-70">Disciplina</p>
+                      <p className="font-bold text-sm leading-tight truncate">{teacher.disciplina}</p>
+                    </div>
                   </div>
 
-                  {/* Turma */}
-                  <div>
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wide flex items-center gap-1 mb-2">
-                      <MapPin className="w-3 h-3" /> Turma Atendida
-                    </h4>
-                    <span className="inline-block bg-[#FDC12D]/10 text-[#FDC12D] border border-[#FDC12D]/20 px-3 py-1 rounded-md text-sm font-bold">
-                      {teacher.turma}
-                    </span>
+                  <div className="flex items-center gap-2 bg-[#FDC12D]/10 text-[#d49e1e] px-4 py-2 rounded-2xl flex-1 border border-[#FDC12D]/20">
+                    <MapPin className="w-4 h-4 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-70">Turma</p>
+                      <p className="font-bold text-sm leading-tight truncate">{teacher.turma}</p>
+                    </div>
                   </div>
-
                 </div>
 
-                {/* Rodapé do Card (Botões de Ação) */}
-                <div className="mt-6 pt-4 border-t border-gray-100 flex gap-3">
+                {/* 3. Bloco de Acesso (Login/Senha) */}
+                <div className="flex flex-col sm:flex-row gap-3 xl:w-1/3 bg-gray-50 p-3 rounded-2xl border border-gray-100 relative">
+                    <div className="absolute -top-3 left-4 bg-white px-2 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-gray-400 border border-gray-100 rounded-full">
+                        <Key className="w-3 h-3" /> Acesso
+                    </div>
+                    
+                    <div className="flex-1 mt-1">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase">Login</p>
+                        <p className="text-sm font-bold text-[#3F3D56]">{teacher.login || 'Não gerado'}</p>
+                    </div>
+                    
+                    <div className="flex-1 mt-1 flex items-center justify-between">
+                        <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase">Senha</p>
+                            <p className="text-sm font-bold text-[#E91E63] font-mono tracking-wider">
+                                {visiblePasswords.includes(teacher.id) ? (teacher.senha || '---') : '••••••••'}
+                            </p>
+                        </div>
+                        <button 
+                            onClick={() => togglePasswordVisibility(teacher.id)}
+                            className="p-2 text-gray-400 hover:text-[#00E5FF] bg-white rounded-lg border border-gray-200 shadow-sm"
+                            title="Mostrar/Esconder Senha"
+                        >
+                            {visiblePasswords.includes(teacher.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                    </div>
+                </div>
+
+                {/* 4. Bloco de Ações (Editar / Remover) */}
+                <div className="flex gap-2 xl:w-auto xl:ml-auto border-t xl:border-t-0 border-gray-100 pt-4 xl:pt-0">
                   <Button 
-                    variant="outline" 
-                    className="flex-1 rounded-xl border-gray-200 text-gray-500 hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[#00E5FF]/5 font-bold h-10"
+                    variant="ghost" 
+                    className="flex-1 xl:flex-none text-gray-400 hover:text-[#00E5FF] hover:bg-[#00E5FF]/10 font-bold rounded-xl px-3"
                   >
-                    <Edit className="w-4 h-4 mr-2" /> Editar
+                    <Edit className="w-5 h-5 xl:mr-0 2xl:mr-2" /> 
+                    <span className="inline-block xl:hidden 2xl:inline-block">Editar</span>
                   </Button>
                   
                   <Button 
-                    variant="outline" 
-                    className="flex-1 rounded-xl border-gray-200 text-gray-500 hover:text-[#E91E63] hover:border-[#E91E63] hover:bg-[#E91E63]/5 font-bold h-10"
+                    variant="ghost" 
+                    className="flex-1 xl:flex-none text-gray-400 hover:text-[#E91E63] hover:bg-[#E91E63]/10 font-bold rounded-xl px-3"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" /> Remover
+                    <Trash2 className="w-5 h-5 xl:mr-0 2xl:mr-2" /> 
+                    <span className="inline-block xl:hidden 2xl:inline-block">Remover</span>
                   </Button>
                 </div>
 
@@ -217,6 +260,7 @@ export default function ManageTeachersPage() {
           </div>
         )}
 
+        {/* Modal de Criação (Mantido igual) */}
         <CreateTeacherModal 
           isOpen={isModalOpen} 
           onClose={() => setIsModalOpen(false)} 

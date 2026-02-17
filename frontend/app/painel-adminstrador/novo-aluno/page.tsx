@@ -1,27 +1,99 @@
 "use client"
 
 import { 
-  UserPlus, 
-  ChevronLeft, 
-  User, 
   Users, 
-  Save, 
-  Sparkles 
+  ChevronLeft, 
+  Search,
+  UserPlus,
+  Edit,
+  Trash2,
+  BookOpen,
+  MapPin,
+  Loader2,
+  GraduationCap,
+  Key,
+  EyeOff,
+  Eye
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
 
-export default function CreateStudentPage() {
+// 1. IMPORTANDO O MODAL QUE ACABAMOS DE CRIAR
+import { CreateStudentModal } from "@/components/CreateStudentModal"
+
+interface Aluno {
+  id: number;
+  nome: string;
+  turma: string;
+  disciplina: string; 
+  login?: string; 
+  senha?: string; 
+}
+
+export default function ManageStudentsPage() {
+  const [alunos, setAlunos] = useState<Aluno[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState("")
+  const [visiblePasswords, setVisiblePasswords] = useState<number[]>([])
+
+  // 2. ESTADO PARA CONTROLAR O MODAL
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const togglePasswordVisibility = (id: number) => {
+    setVisiblePasswords(prev => 
+      prev.includes(id) ? prev.filter(aId => aId !== id) : [...prev, id]
+    )
+  }
+
+  // Função chamada quando o modal cria um aluno com sucesso
+  const handleSuccess = () => {
+    console.log("Aluno criado, atualizando lista...")
+    // Idealmente, você pode chamar a função fetchAlunos() aqui para recarregar a lista do banco!
+  }
+
+  useEffect(() => {
+    const fetchAlunos = async () => {
+      setIsLoading(true)
+      const token = localStorage.getItem("@Escola:token")
+
+      try {
+        const response = await fetch("http://localhost:3001/alunos", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setAlunos(data)
+        } else {
+          setError("Não foi possível carregar a lista de alunos.")
+        }
+      } catch (err) {
+        // Fallback mockado para testes
+        setAlunos([
+            { id: 101, nome: "Lucas Silva", turma: "4º Ano B", disciplina: "Ens. Fundamental", login: "lucas.silva", senha: "abc" },
+            { id: 102, nome: "Sofia Mendes", turma: "Maternal II", disciplina: "Ens. Infantil", login: "sofia.mendes", senha: "123" },
+            { id: 103, nome: "Enzo Gabriel", turma: "1º Ano A", disciplina: "Ens. Fundamental", login: "enzo.gabriel", senha: "456" },
+        ])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchAlunos()
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka p-6 pb-20 relative overflow-hidden flex flex-col items-center">
       
-      {/* --- DECORAÇÃO DE FUNDO --- */}
-      {/* Bolhas focadas no Rosa (Tema Aluno) */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#E91E63]/10 rounded-full blur-3xl z-0" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-80 h-80 bg-[#FDC12D]/10 rounded-full blur-3xl z-0" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#FDC12D]/10 rounded-full blur-3xl z-0" />
 
-      {/* --- CABEÇALHO DE NAVEGAÇÃO --- */}
-      <div className="w-full max-w-2xl z-10 flex items-center justify-between mb-8">
+      <div className="w-full max-w-6xl z-10 flex items-center justify-between mb-8">
         <Link href="/painel-adminstrador">
           <Button variant="ghost" className="text-[#3F3D56] hover:bg-white/50 hover:text-[#E91E63] font-bold rounded-full gap-2 pl-2">
             <div className="bg-white p-2 rounded-full shadow-sm">
@@ -32,88 +104,171 @@ export default function CreateStudentPage() {
         </Link>
       </div>
 
-      {/* --- CONTEÚDO PRINCIPAL --- */}
-      <div className="w-full max-w-2xl z-10">
+      <div className="w-full max-w-6xl z-10">
         
-        {/* Título da Página */}
-        <div className="flex items-center gap-4 mb-8 pl-4">
-          <div className="w-16 h-16 bg-[#E91E63] rounded-[24px] flex items-center justify-center shadow-lg transform -rotate-3">
-            <UserPlus className="w-8 h-8 text-white" strokeWidth={2.5} />
-          </div>
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#3F3D56]">
-              Novo Aluno
-            </h1>
-            <p className="text-gray-500 font-medium">
-              Matrícula rápida de estudante.
-            </p>
-          </div>
-        </div>
-
-        {/* --- FORMULÁRIO (CARD) --- */}
-        <div className="bg-white p-8 md:p-12 rounded-[40px] shadow-xl border-b-[8px] border-[#E91E63] relative">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           
-          <Sparkles className="absolute top-8 right-8 w-8 h-8 text-[#E91E63] opacity-50 animate-pulse hidden md:block" />
+          <div className="flex items-center gap-4 pl-4">
+            <div className="w-16 h-16 bg-[#E91E63] rounded-[24px] flex items-center justify-center shadow-lg transform -rotate-3">
+              <GraduationCap className="w-8 h-8 text-white" strokeWidth={2.5} />
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-[#3F3D56]">
+                Alunos Matriculados
+              </h1>
+              <p className="text-gray-500 font-medium">
+                Gerencie todos os estudantes da escola.
+              </p>
+            </div>
+          </div>
 
-          <form className="space-y-8">
-            
-            {/* Campo 1: Nome do Aluno */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-[#E91E63] ml-2 uppercase tracking-wide">
-                Nome Completo
-              </label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input 
-                  type="text" 
-                  placeholder="Ex: Lucas Silva"
-                  className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#E91E63] text-gray-600 rounded-2xl py-4 pl-12 pr-4 outline-none transition-all font-medium text-lg h-14"
-                />
-              </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Buscar aluno..." 
+                className="w-full sm:w-72 pl-12 pr-4 py-3 rounded-full border-2 border-white shadow-sm focus:border-[#E91E63] outline-none font-medium text-gray-600 bg-white transition-all"
+              />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
 
-            {/* Campo 2: Turma (Select) */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-[#E91E63] ml-2 uppercase tracking-wide">
-                Turma
-              </label>
-              <div className="relative">
-                <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#E91E63] text-gray-600 rounded-2xl py-4 pl-12 pr-4 outline-none transition-all font-medium text-lg h-14 appearance-none cursor-pointer">
-                  <option value="" disabled selected>Selecione a turma...</option>
-                  <option>Maternal I</option>
-                  <option>Maternal II</option>
-                  <option>Jardim I</option>
-                  <option>Jardim II</option>
-                  <option>1º Ano - Fundamental</option>
-                  <option>2º Ano - Fundamental</option>
-                  <option>3º Ano - Fundamental</option>
-                </select>
-                {/* Seta do Select Customizada */}
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                   <ChevronLeft className="w-5 h-5 text-gray-400 -rotate-90" />
-                </div>
-              </div>
-            </div>
-
-            <hr className="border-gray-100 dashed my-6" />
-
-            {/* BOTÕES DE AÇÃO */}
-            <div className="flex flex-col-reverse md:flex-row gap-4 justify-end pt-2">
-              <Link href="/painel-adminstrador" className="w-full md:w-auto">
-                <Button variant="ghost" type="button" className="w-full h-14 rounded-full text-gray-400 font-bold hover:bg-gray-100 text-lg">
-                  Cancelar
-                </Button>
-              </Link>
-              
-              <Button className="w-full md:w-auto h-14 px-12 rounded-full bg-[#E91E63] hover:bg-[#d81b60] text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
-                <Save className="mr-2 w-5 h-5" />
-                Matricular Aluno
-              </Button>
-            </div>
-
-          </form>
+            {/* 3. MUDAMOS AQUI: Tiramos o <Link> e colocamos o onClick no Botão */}
+            <Button 
+              onClick={() => setIsModalOpen(true)}
+              className="w-full sm:w-auto h-12 px-8 rounded-full bg-[#E91E63] hover:bg-[#d81b60] text-white font-bold shadow-md hover:shadow-lg hover:-translate-y-1 transition-all"
+            >
+              <UserPlus className="mr-2 w-5 h-5" />
+              Novo Aluno
+            </Button>
+          </div>
         </div>
+
+        {/* ... (O restante dos estados de Loading, Error e a Lista de Alunos continua exatamente igual) ... */}
+        
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-12 h-12 text-[#E91E63] animate-spin mb-4" />
+            <p className="text-[#3F3D56] font-bold text-lg">Buscando alunos...</p>
+          </div>
+        )}
+
+        {error && !isLoading && (
+          <div className="bg-red-50 text-red-500 p-6 rounded-3xl text-center font-bold border-2 border-red-100">
+            {error}
+          </div>
+        )}
+
+        {!isLoading && !error && alunos.length === 0 && (
+          <div className="bg-white p-10 rounded-3xl text-center shadow-sm border-2 border-gray-100">
+            <p className="text-gray-500 font-bold text-lg">Nenhum aluno matriculado ainda.</p>
+          </div>
+        )}
+
+        {!isLoading && !error && alunos.length > 0 && (
+          <div className="flex flex-col gap-4">
+            {alunos.map((aluno) => (
+              <div 
+                key={aluno.id} 
+                className="bg-white rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 border-l-[8px] border-[#E91E63] flex flex-col xl:flex-row xl:items-center gap-6 group"
+              >
+                
+                <div className="flex items-center gap-4 xl:w-1/4">
+                  <div className="w-14 h-14 rounded-full bg-[#E91E63]/10 text-[#E91E63] flex items-center justify-center font-bold text-2xl shrink-0 uppercase border-2 border-[#E91E63]/20">
+                    {aluno.nome.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-[#3F3D56] leading-tight group-hover:text-[#E91E63] transition-colors">
+                      {aluno.nome}
+                    </h3>
+                    <p className="text-xs text-gray-400 font-bold mt-1 uppercase tracking-wide">
+                      Matrícula: #{aluno.id}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 xl:w-1/3">
+                  <div className="flex items-center gap-2 bg-[#FDC12D]/10 text-[#d49e1e] px-4 py-2 rounded-2xl flex-1 border border-[#FDC12D]/20">
+                    <MapPin className="w-4 h-4 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-70">Turma</p>
+                      <p className="font-bold text-sm leading-tight truncate">{aluno.turma}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 bg-[#00E5FF]/10 text-[#009eb0] px-4 py-2 rounded-2xl flex-1 border border-[#00E5FF]/20">
+                    <BookOpen className="w-4 h-4 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-70">Grade</p>
+                      <p className="font-bold text-sm leading-tight truncate">{aluno.disciplina}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 xl:w-1/3 bg-gray-50 p-3 rounded-2xl border border-gray-100 relative">
+                    <div className="absolute -top-3 left-4 bg-white px-2 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-gray-400 border border-gray-100 rounded-full">
+                        <Key className="w-3 h-3" /> Acesso da Família
+                    </div>
+                    
+                    <div className="flex-1 mt-1">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase">Login</p>
+                        <p className="text-sm font-bold text-[#3F3D56] truncate">{aluno.login || 'Não gerado'}</p>
+                    </div>
+                    
+                    <div className="flex-1 mt-1 flex items-center justify-between">
+                        <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase">Senha</p>
+                            <p className="text-sm font-bold text-[#E91E63] font-mono tracking-wider">
+                                {visiblePasswords.includes(aluno.id) ? (aluno.senha || '---') : '••••••••'}
+                            </p>
+                        </div>
+                        <button 
+                            onClick={() => togglePasswordVisibility(aluno.id)}
+                            className="p-2 text-gray-400 hover:text-[#E91E63] bg-white rounded-lg border border-gray-200 shadow-sm"
+                            title="Mostrar/Esconder Senha"
+                        >
+                            {visiblePasswords.includes(aluno.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex gap-2 xl:w-auto xl:ml-auto border-t xl:border-t-0 border-gray-100 pt-4 xl:pt-0">
+                  <Button 
+                    variant="ghost" 
+                    className="flex-1 xl:flex-none text-gray-400 hover:text-[#00E5FF] hover:bg-[#00E5FF]/10 font-bold rounded-xl px-3"
+                  >
+                    <Edit className="w-5 h-5 xl:mr-0 2xl:mr-2" /> 
+                    <span className="inline-block xl:hidden 2xl:inline-block">Editar</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    className="flex-1 xl:flex-none text-gray-400 hover:text-[#E91E63] hover:bg-[#E91E63]/10 font-bold rounded-xl px-3"
+                  >
+                    <Trash2 className="w-5 h-5 xl:mr-0 2xl:mr-2" /> 
+                    <span className="inline-block xl:hidden 2xl:inline-block">Remover</span>
+                  </Button>
+                </div>
+
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!isLoading && alunos.length > 0 && (
+          <div className="mt-10 flex justify-center">
+            <Button variant="ghost" className="text-[#E91E63] font-bold hover:bg-[#E91E63]/10 rounded-full px-8 py-6">
+              Ver mais alunos...
+            </Button>
+          </div>
+        )}
+
+        {/* 4. RENDERIZANDO O MODAL AQUI NO FINAL DA PÁGINA */}
+        <CreateStudentModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          onSuccess={handleSuccess}
+        />
+
       </div>
     </div>
   )
