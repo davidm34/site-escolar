@@ -1,5 +1,5 @@
 const Models = require('../models/models');
-const TurmasModel = require('../models/turmas.model')
+const { gerarLogin, gerarSenha } = require('../utils/geradorCredenciais');
 
 module.exports = {
     
@@ -7,26 +7,12 @@ module.exports = {
         try {
             const { nome, disciplinas, turmas } = req.body;
 
-            console.log(req.body)
-
             if (!nome) {
                 return res.status(400).json({ erro: 'O nome é obrigatório para gerar as credenciais.' });
             }
 
-            const partesNome = nome.toLowerCase().trim().split(/\s+/);
-            const loginBase = partesNome.length > 1 
-                ? `${partesNome[0]}.${partesNome[partesNome.length - 1]}` 
-                : partesNome[0];
-
-            const loginFinal = `${loginBase}${Math.floor(100 + Math.random() * 900)}`;
-
-            const caracteres = 'abcdefghijkmnopqrstuvwxyz23456789';
-            let senhaAleatoria = '';
-            const tamanhoSenha = 6; // Você pode mudar para 5 se preferir
-        
-            for (let i = 0; i < tamanhoSenha; i++) {
-                senhaAleatoria += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-            }
+            const loginFinal = gerarLogin(nome);
+            const senhaAleatoria = gerarSenha(6);
 
             const resultado = await Models.createProfessor(nome, loginFinal, senhaAleatoria, disciplinas, turmas);
 
@@ -58,12 +44,13 @@ module.exports = {
                 
                 const turmaData = await Models.turmasProfessor(professor.id);
                 
-                
                 professoresCompletos.push({
                     id: professor.id,
                     nome: professor.nome_completo,
                     disciplina: disciplinaData?.nome || 'Não atribuída',
-                    turma: turmaData?.nome || 'Não atribuída'
+                    turma: turmaData?.nome || 'Não atribuída',
+                    login: professor.login,
+                    senha: professor.senha
                 });
             }
             

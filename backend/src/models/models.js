@@ -63,9 +63,34 @@ const Models = {
        ALUNOS
     ================================ */
 
+    createAluno: async (nome, login, senha, turmas) => {
+        const client = await db.pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            // Passamos o 'client' como o 5º argumento para manter a mesma transação
+            const usuario = await Models.addUsuarioCompleto(nome, 'aluno', login, senha, client);
+            const id = usuario.id;
+
+            await client.query(
+                `INSERT INTO alunos (usuario_id, turma_id) 
+                VALUES ($1, $2)`,
+                [id, turmas]
+            );
+
+            await client.query('COMMIT');
+            return id;
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        } finally {
+            client.release();
+        }
+    },   
+
     getAlunos: async () => {
         const res = await db.query(`
-            SELECT u.id, u.nome_completo, a.turma_id
+            SELECT u.id, u.nome_completo, u.login, u.senha, a.turma_id
             FROM alunos a
             JOIN usuarios u ON u.id = a.usuario_id
         `);
@@ -95,6 +120,11 @@ const Models = {
             [id]
         );
         // CASCADE remove de alunos automaticamente
+    },
+
+    turmaAluno: async(turmaId) => {
+        const turma = await db.query('SELECT nome FROM turmas WHERE id = $1', [turmaId]);
+        return turma.rows[0];
     },
 
     /* ===============================
@@ -128,7 +158,7 @@ const Models = {
 
     getProfessores: async () => {
         const res = await db.query(`
-            SELECT u.id, u.nome_completo
+            SELECT u.id, u.nome_completo, u.login, u.senha
             FROM professores p
             JOIN usuarios u ON u.id = p.usuario_id
         `);

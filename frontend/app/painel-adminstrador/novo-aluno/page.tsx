@@ -7,7 +7,6 @@ import {
   UserPlus,
   Edit,
   Trash2,
-  BookOpen,
   MapPin,
   Loader2,
   GraduationCap,
@@ -18,15 +17,12 @@ import {
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
-
-// 1. IMPORTANDO O MODAL QUE ACABAMOS DE CRIAR
 import { CreateStudentModal } from "@/components/CreateStudentModal"
 
 interface Aluno {
   id: number;
-  nome: string;
+  nome_completo: string;
   turma: string;
-  disciplina: string; 
   login?: string; 
   senha?: string; 
 }
@@ -36,8 +32,6 @@ export default function ManageStudentsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const [visiblePasswords, setVisiblePasswords] = useState<number[]>([])
-
-  // 2. ESTADO PARA CONTROLAR O MODAL
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const togglePasswordVisibility = (id: number) => {
@@ -46,10 +40,9 @@ export default function ManageStudentsPage() {
     )
   }
 
-  // Função chamada quando o modal cria um aluno com sucesso
   const handleSuccess = () => {
     console.log("Aluno criado, atualizando lista...")
-    // Idealmente, você pode chamar a função fetchAlunos() aqui para recarregar a lista do banco!
+    // Recarregar a lista aqui se necessário
   }
 
   useEffect(() => {
@@ -58,7 +51,7 @@ export default function ManageStudentsPage() {
       const token = localStorage.getItem("@Escola:token")
 
       try {
-        const response = await fetch("http://localhost:3001/alunos", {
+        const response = await fetch("http://localhost:3001/aluno", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -73,11 +66,11 @@ export default function ManageStudentsPage() {
           setError("Não foi possível carregar a lista de alunos.")
         }
       } catch (err) {
-        // Fallback mockado para testes
+        // Fallback mockado
         setAlunos([
-            { id: 101, nome: "Lucas Silva", turma: "4º Ano B", disciplina: "Ens. Fundamental", login: "lucas.silva", senha: "abc" },
-            { id: 102, nome: "Sofia Mendes", turma: "Maternal II", disciplina: "Ens. Infantil", login: "sofia.mendes", senha: "123" },
-            { id: 103, nome: "Enzo Gabriel", turma: "1º Ano A", disciplina: "Ens. Fundamental", login: "enzo.gabriel", senha: "456" },
+            { id: 901, nome_completo: "Lucas Silva", turma: "4º Ano B", login: "lucas.silva", senha: "abc" },
+            { id: 902, nome_completo: "Sofia Mendes", turma: "Maternal II", login: "sofia.mendes", senha: "123" },
+            { id: 903, nome_completo: "Enzo Gabriel", turma: "1º Ano A", login: "enzo.gabriel", senha: "456" },
         ])
       } finally {
         setIsLoading(false)
@@ -132,7 +125,6 @@ export default function ManageStudentsPage() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
 
-            {/* 3. MUDAMOS AQUI: Tiramos o <Link> e colocamos o onClick no Botão */}
             <Button 
               onClick={() => setIsModalOpen(true)}
               className="w-full sm:w-auto h-12 px-8 rounded-full bg-[#E91E63] hover:bg-[#d81b60] text-white font-bold shadow-md hover:shadow-lg hover:-translate-y-1 transition-all"
@@ -143,8 +135,6 @@ export default function ManageStudentsPage() {
           </div>
         </div>
 
-        {/* ... (O restante dos estados de Loading, Error e a Lista de Alunos continua exatamente igual) ... */}
-        
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-12 h-12 text-[#E91E63] animate-spin mb-4" />
@@ -172,13 +162,14 @@ export default function ManageStudentsPage() {
                 className="bg-white rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 border-l-[8px] border-[#E91E63] flex flex-col xl:flex-row xl:items-center gap-6 group"
               >
                 
+                {/* 1. Bloco de Identificação */}
                 <div className="flex items-center gap-4 xl:w-1/4">
                   <div className="w-14 h-14 rounded-full bg-[#E91E63]/10 text-[#E91E63] flex items-center justify-center font-bold text-2xl shrink-0 uppercase border-2 border-[#E91E63]/20">
-                    {aluno.nome.charAt(0)}
+                    {aluno.nome_completo.charAt(0)}
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-[#3F3D56] leading-tight group-hover:text-[#E91E63] transition-colors">
-                      {aluno.nome}
+                      {aluno.nome_completo}
                     </h3>
                     <p className="text-xs text-gray-400 font-bold mt-1 uppercase tracking-wide">
                       Matrícula: #{aluno.id}
@@ -186,24 +177,18 @@ export default function ManageStudentsPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 xl:w-1/3">
-                  <div className="flex items-center gap-2 bg-[#FDC12D]/10 text-[#d49e1e] px-4 py-2 rounded-2xl flex-1 border border-[#FDC12D]/20">
-                    <MapPin className="w-4 h-4 shrink-0" />
+                {/* 2. Bloco da Turma (Agora ocupa todo o espaço central que era dividido) */}
+                <div className="xl:w-1/4">
+                  <div className="flex items-center gap-2 bg-[#FDC12D]/10 text-[#d49e1e] px-4 py-3 rounded-2xl w-full border border-[#FDC12D]/20">
+                    <MapPin className="w-5 h-5 shrink-0" />
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-wider opacity-70">Turma</p>
                       <p className="font-bold text-sm leading-tight truncate">{aluno.turma}</p>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2 bg-[#00E5FF]/10 text-[#009eb0] px-4 py-2 rounded-2xl flex-1 border border-[#00E5FF]/20">
-                    <BookOpen className="w-4 h-4 shrink-0" />
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-70">Grade</p>
-                      <p className="font-bold text-sm leading-tight truncate">{aluno.disciplina}</p>
-                    </div>
-                  </div>
                 </div>
 
+                {/* 3. Bloco de Acesso */}
                 <div className="flex flex-col sm:flex-row gap-3 xl:w-1/3 bg-gray-50 p-3 rounded-2xl border border-gray-100 relative">
                     <div className="absolute -top-3 left-4 bg-white px-2 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-gray-400 border border-gray-100 rounded-full">
                         <Key className="w-3 h-3" /> Acesso da Família
@@ -231,6 +216,7 @@ export default function ManageStudentsPage() {
                     </div>
                 </div>
 
+                {/* 4. Ações */}
                 <div className="flex gap-2 xl:w-auto xl:ml-auto border-t xl:border-t-0 border-gray-100 pt-4 xl:pt-0">
                   <Button 
                     variant="ghost" 
@@ -262,7 +248,6 @@ export default function ManageStudentsPage() {
           </div>
         )}
 
-        {/* 4. RENDERIZANDO O MODAL AQUI NO FINAL DA PÁGINA */}
         <CreateStudentModal 
           isOpen={isModalOpen} 
           onClose={() => setIsModalOpen(false)} 

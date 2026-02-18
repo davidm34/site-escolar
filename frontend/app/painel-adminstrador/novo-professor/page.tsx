@@ -72,8 +72,8 @@ export default function ManageTeachersPage() {
       } catch (err) {
         // Mock de fallback para você ver o design enquanto a API não responde
         setProfessores([
-          { id: 10, nome: "João Silva", disciplina: "Matemática", turma: "9º Ano A", login: "joao.silva", senha: "123" },
-          { id: 11, nome: "Maria Souza", disciplina: "História", turma: "1º Ano Médio", login: "maria.souza", senha: "456" }
+          { id: 910, nome: "João Silva", disciplina: "Matemática", turma: "9º Ano A", login: "joao.silva", senha: "123" },
+          { id: 911, nome: "Maria Souza", disciplina: "História", turma: "1º Ano Médio", login: "maria.souza", senha: "456" }
         ])
         // setError("Erro de conexão com o servidor.")
       } finally {
