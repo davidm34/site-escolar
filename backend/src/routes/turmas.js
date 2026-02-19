@@ -12,6 +12,9 @@ router.post('/', autenticar, permitir('administrador'), controller.criar);
 // listar turmas
 router.get('/', autenticar, permitir('administrador'), controller.listar);
 
+// listar turmas do professor
+router.get('/professor', autenticar, permitir('administrador', 'professor'), controller.listar);
+
 // buscar turma por id
 router.get('/:id', autenticar, permitir('administrador'), controller.buscarPorId);
 
@@ -28,7 +31,7 @@ router.post('/disciplina', autenticar, permitir('administrador'), controller.adi
 router.delete('/disciplina', autenticar, permitir('administrador'), controller.removerDisciplina);
 
 // listar disciplinas da turma
-router.get('/:id/disciplinas', autenticar, permitir('administrador'), controller.listarDisciplinas);
+router.get('/:id/disciplinas', autenticar, permitir('administrador', 'professor'), controller.listarDisciplinas);
 
 
 module.exports = router;

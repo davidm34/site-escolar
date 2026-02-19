@@ -20,7 +20,6 @@ import { useEffect, useState } from "react";
 const admin = {
   name: "Diretora Helena",
   role: "Administradora Geral",
-  photo: "/images/director_avatar.jpg", // Placeholder
 }
 
 // Estatísticas Rápidas
@@ -76,11 +75,10 @@ export default function AdminDashboard() {
     
     if (savedUser) {
       const user = JSON.parse(savedUser);
-      // 'nome_completo' ou 'nome' dependendo de como seu backend retorna
+
       setUserName(user.nome); 
     }
   }, []);
-
 
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka pb-10">

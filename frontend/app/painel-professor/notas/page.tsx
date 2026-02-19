@@ -57,6 +57,7 @@ const dadosProfessor = [
 ]
 
 export default function GradesPage() {
+
   const [selectedTurmaId, setSelectedTurmaId] = useState<string>("")
   const [selectedDisciplinaId, setSelectedDisciplinaId] = useState<string>("")
   const [disciplinasDisponiveis, setDisciplinasDisponiveis] = useState<Disciplina[]>([])
@@ -73,6 +74,15 @@ export default function GradesPage() {
       return
     }
 
+     const savedUser = localStorage.getItem("@Escola:user");
+      
+      if (savedUser) {
+        const user = JSON.parse(savedUser);
+        const id = user.id;
+        
+        
+
+      }
     // Acha a turma selecionada nos dados
     const turmaEncontrada = dadosProfessor.find(t => t.id.toString() === selectedTurmaId)
     

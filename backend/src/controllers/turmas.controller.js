@@ -54,6 +54,16 @@ const TurmasController = {
         }
     },
 
+    async listarProfessores(req, res){
+        try {
+            const turmas = await TurmasModel.listarTurmasProfessores()
+            res.json(turmas)
+        } catch (err) {
+            res.status(500).json({erro: 'Erro ao listar as turmas do professor'});
+        }
+
+    },
+
     async buscarPorId(req, res) {
         try {
             const turma = await TurmasModel.buscarTurmaPorId(req.params.id);

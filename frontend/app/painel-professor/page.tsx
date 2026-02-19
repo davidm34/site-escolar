@@ -12,6 +12,7 @@ import {
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
 
 // Dados fictícios do Professor
 const teacher = {
@@ -69,6 +70,21 @@ const myClasses = [
 
 export default function TeacherDashboard() {
 
+  const [userName, setUserName] = useState("Carregando...");
+  
+    useEffect(() => {
+      // Recupera os dados salvos no login
+      const savedUser = localStorage.getItem("@Escola:user");
+      
+      if (savedUser) {
+        const user = JSON.parse(savedUser);
+
+        // 'nome_completo' ou 'nome' dependendo de como seu backend retorna
+        setUserName(user.nome); 
+      }
+    }, []);
+
+
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka pb-10">
       
@@ -92,7 +108,7 @@ export default function TeacherDashboard() {
             </div>
           </div>
           <div>
-            <h2 className="text-[#3F3D56] font-bold text-lg leading-none">Prof. {teacher.name}</h2>
+            <h2 className="text-[#3F3D56] font-bold text-lg leading-none">Prof. {userName}</h2>
             <p className="text-gray-400 text-sm font-medium">{teacher.role}</p>
           </div>
         </div>

@@ -35,6 +35,12 @@ const TurmasModel = {
         return res.rows;
     },
 
+    listarTurmasProfessores: async (id) => {
+        const turma_id = await db.query('SELECT turma_id FROM professores WHERE usuario_id = $1', [id]);
+        const res = await db.query('SELECT nome FROM turmas WHERE id = $1', [turma_id]);
+        return res.rows;
+    },
+
     // Buscar turma por ID
     buscarTurmaPorId: async (id) => {
         const res = await db.query(
