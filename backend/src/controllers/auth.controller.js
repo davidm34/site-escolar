@@ -11,7 +11,7 @@ router.post('/login', async (req, res) => {
     try {
         const usuario = await Models.getUsuarioByLogin(login);
 
-        if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
+        if (usuario.cargo == 'administrador' && (!usuario || !(await bcrypt.compare(senha, usuario.senha)))) {
             return res.status(401).json({ erro: "Login ou senha incorretos." });
         }
 

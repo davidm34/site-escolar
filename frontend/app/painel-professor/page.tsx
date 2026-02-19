@@ -68,6 +68,7 @@ const myClasses = [
 ]
 
 export default function TeacherDashboard() {
+
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka pb-10">
       
