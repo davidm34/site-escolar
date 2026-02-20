@@ -104,24 +104,43 @@ export default function GradesPage() {
 
   // 3. Efeito quando troca a DISCIPLINA (Carrega os alunos)
   useEffect(() => {
-    if (!selectedTurmaId || !selectedDisciplinaId) {
-      setAlunos([])
-      return
-    }
+    const fetchAlunosDaTurma = async () => {
+      if (!selectedTurmaId || !selectedDisciplinaId) {
+        setAlunos([]);
+        return;
+      }
 
-    setLoading(true)
-    // Simulação de Fetch (Pode ser substituído por um fetch real para /notas/alunos?turmaId=...)
-    setTimeout(() => {
-      const mockAlunos = [
-        { id: 101, nome: "Ana Julia", nota1: "8.5", nota2: "9.0", nota3: "", media: "5.8" },
-        { id: 102, nome: "Bruno Marques", nota1: "7.0", nota2: "6.5", nota3: "8.0", media: "7.1" },
-        { id: 103, nome: "Carlos Eduardo", nota1: "10", nota2: "10", nota3: "10", media: "10.0" },
-        { id: 104, nome: "Daniela Costa", nota1: "5.5", nota2: "4.0", nota3: "", media: "3.1" },
-      ]
-      setAlunos(mockAlunos)
-      setLoading(false)
-    }, 600)
-  }, [selectedTurmaId, selectedDisciplinaId])
+      setLoading(true);
+      const token = localStorage.getItem("@Escola:token");
+
+      try {
+        // Faz a requisição GET enviando o ID da turma selecionada como query parameter
+        const response = await fetch(`http://localhost:3001/turmas/alunos?turmaId=${selectedTurmaId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Certifique-se que o backend retorna os campos: id, nome, nota1, nota2, nota3 e media
+          setAlunos(data);
+        } else {
+          const errorData = await response.json();
+          console.error("Erro ao carregar alunos:", errorData.erro);
+          setAlunos([]);
+        }
+      } catch (error) {
+        console.error("Erro na requisição de alunos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAlunosDaTurma();
+  }, [selectedTurmaId, selectedDisciplinaId]);
 
   const handleNotaChange = (id: number, field: 'nota1' | 'nota2' | 'nota3', value: string) => {
     if (value && !/^\d*\.?\d*$/.test(value)) return;

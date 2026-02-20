@@ -60,6 +60,20 @@ const Models = {
         }
     },
 
+    getNomeById: async (id) => {
+        try {
+            const res = await db.query(
+                'SELECT nome_completo FROM usuarios WHERE id = $1',
+                [id]
+            );
+
+            return res.rows[0]
+        } catch (err){
+            console.error("Erro ao buscar utilizador por ID:", err.message);
+        }
+
+    },
+
     /* ===============================
        ALUNOS
     ================================ */

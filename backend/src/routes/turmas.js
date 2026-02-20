@@ -16,7 +16,7 @@ router.get('/', autenticar, permitir('administrador'), controller.listar);
 router.get('/professores', autenticar, permitir('administrador', 'professor'), controller.listarTurmaProfessores);
 
 // listar alunos da turma
-router.get('/alunos', autenticar, permitir('administrador', 'professor'), controller.listarTurmaAlunos);
+router.get('/alunos', autenticar, permitir('administrador', 'professor'), controller.listarAlunos);
 
 // buscar turma por id
 router.get('/:id', autenticar, permitir('administrador'), controller.buscarPorId);

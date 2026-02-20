@@ -103,8 +103,17 @@ const TurmasModel = {
             [turma_id]
         );
         return res.rows;
-    }
+    },
 
+    listarTurmaAlunos: async (turma_id) => {
+        const res = await db.query(
+            `SELECT usuario_id
+            FROM alunos
+            WHERE turma_id = $1`,
+            [turma_id]
+        );
+        return res.rows;
+    }
 
 };
 

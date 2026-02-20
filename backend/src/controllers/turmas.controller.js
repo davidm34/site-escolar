@@ -1,3 +1,4 @@
+const Models = require('../models/models');
 const TurmasModel = require('../models/turmas.model');
 
 const TurmasController = {
@@ -142,9 +143,17 @@ const TurmasController = {
         }
     },
 
-    async listarTurmaAlunos(req, res) {
+    async listarAlunos(req, res) {
         try {
-            const a = 1
+            const { turmaId } = req.query;
+            const id_alunos = await TurmasModel.listarTurmaAlunos(turmaId);        
+            const lista_nome_alunos = []
+            for(let i = 0; i < id_alunos.length; i++){
+                const nome_alunos = await Models.getNomeById(id_alunos[i].usuario_id);
+                lista_nome_alunos.push(nome_alunos)
+                console.log(lista_nome_alunos)
+            }
+            
         } catch (err) {
             res.status(500).json({ erro: 'Erro ao listar alunos da disciplina'})
         }
