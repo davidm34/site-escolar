@@ -54,14 +54,26 @@ const TurmasController = {
         }
     },
 
-    async listarProfessores(req, res){
+   async listarTurmaProfessores(req, res) {
         try {
-            const turmas = await TurmasModel.listarTurmasProfessores()
-            res.json(turmas)
-        } catch (err) {
-            res.status(500).json({erro: 'Erro ao listar as turmas do professor'});
-        }
+            const { id } = req.query;
 
+            const turmas = await TurmasModel.listarTurmasProfessores(id);
+            const disciplinas = await TurmasModel.listarDisciplinasDaTurma(id);
+
+            const resultado = turmas.map(nomeTurma => ({
+                id: Number(id),
+                turma: nomeTurma,
+                disciplinas: disciplinas.map(d => ({
+                    id: d.id,
+                    nome: d.nome
+                }))
+            }));
+
+            res.json(resultado);
+        } catch (err) {
+            res.status(500).json({ erro: 'Erro ao listar as turmas do professor' });
+        }
     },
 
     async buscarPorId(req, res) {

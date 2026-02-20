@@ -13,7 +13,7 @@ router.post('/', autenticar, permitir('administrador'), controller.criar);
 router.get('/', autenticar, permitir('administrador'), controller.listar);
 
 // listar turmas do professor
-router.get('/professor', autenticar, permitir('administrador', 'professor'), controller.listar);
+router.get('/professores', autenticar, permitir('administrador', 'professor'), controller.listarTurmaProfessores);
 
 // buscar turma por id
 router.get('/:id', autenticar, permitir('administrador'), controller.buscarPorId);
