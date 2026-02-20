@@ -37,13 +37,13 @@ const TurmasModel = {
 
     listarTurmasProfessores: async (id) => {
         const result = await db.query(`
-            SELECT t.nome
+            SELECT t.id as turma_id, t.nome
             FROM professores p
             JOIN turmas t ON t.id = p.turma_id
             WHERE p.usuario_id = $1
         `, [id]);
 
-        return result.rows.map(row => row.nome);
+       return result.rows; // Retorna array de objetos [{ turma_id: 1, nome: "Turma A" }, ...]
     },
 
     // Buscar turma por ID
@@ -104,6 +104,7 @@ const TurmasModel = {
         );
         return res.rows;
     }
+
 
 };
 

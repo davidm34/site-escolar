@@ -1,4 +1,5 @@
 const db = require('../config/database');
+const TurmasModel = require('../models/turmas.model')
 
 const Models = {
     /* ===============================
@@ -72,11 +73,27 @@ const Models = {
             const usuario = await Models.addUsuarioCompleto(nome, 'aluno', login, senha, client);
             const id = usuario.id;
 
+            const disciplinas = await TurmasModel.listarDisciplinasDaTurma(turmas);
+            const id_disciplina = disciplinas.map(d => d.id);
+
+            // Inserir na tabela de alunos
             await client.query(
                 `INSERT INTO alunos (usuario_id, turma_id) 
                 VALUES ($1, $2)`,
                 [id, turmas]
             );
+             
+            // Inserir na tabela de notas
+            for(let i = 0; i < disciplinas.length; i++){    
+                for(let j = 1; j < 4; j++){
+                    await client.query(
+                        `INSERT INTO notas (aluno_id, disciplina_id, unidade_id, valor)
+                        VALUES ($1, $2, $3,$4)`,
+                        [id, id_disciplina[i], j, null]
+                    );
+                }
+
+            }
 
             await client.query('COMMIT');
             return id;

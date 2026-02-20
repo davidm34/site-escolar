@@ -56,8 +56,6 @@ module.exports = {
 
             } 
 
-            console.log(alunosComplementos)
-
             res.json(alunosComplementos);
         } catch (err) {
             res.status(500).json({ erro: 'Erro ao listar alunos' });
