@@ -43,7 +43,7 @@ const TurmasModel = {
             WHERE p.usuario_id = $1
         `, [id]);
 
-       return result.rows; // Retorna array de objetos [{ turma_id: 1, nome: "Turma A" }, ...]
+       return result.rows; 
     },
 
     // Buscar turma por ID
@@ -94,15 +94,34 @@ const TurmasModel = {
     },
 
     // Listar disciplinas de uma turma
-    listarDisciplinasDaTurma: async (turma_id) => {
-        const res = await db.query(
-            `SELECT d.id, d.nome
-             FROM turmas_disciplinas td
-             JOIN disciplinas d ON d.id = td.disciplina_id
-             WHERE td.turma_id = $1`,
-            [turma_id]
+    listarDisciplinasDoProfessor: async (id, turma_id) => {
+        const id_disciplinas = await db.query(
+            `SELECT disciplina_id
+            FROM professores p
+            WHERE p.usuario_id = $1 AND p.turma_id = $2`,
+            [id, turma_id]
         );
-        return res.rows;
+        
+        if (id_disciplinas.rows.length === 0) {
+            return [];
+        }
+        
+        const disciplinasIds = id_disciplinas.rows.map(k => k.disciplina_id);
+        
+        // Usa ANY($1) para comparar com múltiplos valores
+        const nome_disciplinas = await db.query(
+            `SELECT id, nome
+            FROM disciplinas
+            WHERE id = ANY($1::int[])`,
+            [disciplinasIds]
+        );
+        
+        const res = nome_disciplinas.rows.map(disciplina => ({
+            id: disciplina.id,
+            nome: disciplina.nome
+        }));
+        
+        return res;
     },
 
     listarTurmaAlunos: async (turma_id) => {
@@ -113,6 +132,12 @@ const TurmasModel = {
             [turma_id]
         );
         return res.rows;
+    },
+
+    listarNotasAlunos: async(lista_alunos) => {
+        const res = await db.query(
+            `SELECT `
+        )
     }
 
 };

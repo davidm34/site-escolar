@@ -66,7 +66,7 @@ const TurmasController = {
             for (let i = 0; i < turmas.length; i++) {
                 const turma = turmas[i];
                 
-                const disciplinas = await TurmasModel.listarDisciplinasDaTurma(turma.turma_id);
+                const disciplinas = await TurmasModel.listarDisciplinasDoProfessor(id, turma.turma_id);
                 
                 resultado.push({
                     id: Number(id),
@@ -143,19 +143,23 @@ const TurmasController = {
         }
     },
 
-    async listarAlunos(req, res) {
+   async listarAlunos(req, res) {
         try {
             const { turmaId } = req.query;
             const id_alunos = await TurmasModel.listarTurmaAlunos(turmaId);        
-            const lista_nome_alunos = []
+            const lista_nome_alunos = [];
+            
             for(let i = 0; i < id_alunos.length; i++){
-                const nome_alunos = await Models.getNomeById(id_alunos[i].usuario_id);
-                lista_nome_alunos.push(nome_alunos)
-                console.log(lista_nome_alunos)
+                const nome_aluno = await Models.getNomeById(id_alunos[i].usuario_id);
+                lista_nome_alunos.push(nome_aluno);
             }
+            console.log(lista_nome_alunos)
+            // CORREÇÃO: Enviar a resposta para o cliente
+            // return res.json(lista_nome_alunos);
             
         } catch (err) {
-            res.status(500).json({ erro: 'Erro ao listar alunos da disciplina'})
+            console.error(err); // Adicionado para facilitar o debug
+            res.status(500).json({ erro: 'Erro ao listar alunos da disciplina' });
         }
     }
 

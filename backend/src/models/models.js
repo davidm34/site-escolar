@@ -63,7 +63,7 @@ const Models = {
     getNomeById: async (id) => {
         try {
             const res = await db.query(
-                'SELECT nome_completo FROM usuarios WHERE id = $1',
+                'SELECT id, nome_completo FROM usuarios WHERE id = $1',
                 [id]
             );
 
