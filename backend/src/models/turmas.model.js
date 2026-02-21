@@ -150,17 +150,21 @@ const TurmasModel = {
 
         const ids = id_alunos.map(k => k.usuario_id);
 
-        console.log(ids)
-        console.log(id_disciplina)
+        const resultado = []
 
-        const res = await db.query(
-            `SELECT unidade_id, valor
-            FROM notas
-            WHERE aluno_id = ANY($1::int[]) AND = WHERE disciplina_id = $2`,
-            [ids, id_disciplina]
-        )
+        for(let i = 0; i < ids.length; i++){
+            const res = await db.query(
+                `SELECT unidade_id, valor
+                FROM notas
+                WHERE aluno_id = $1 AND disciplina_id = $2`,
+                [ids[i], id_disciplina]
+            )
+
+            resultado.push(res.rows)
+            
+        }
         
-        return res.rows
+        return resultado;
     }
 
 };

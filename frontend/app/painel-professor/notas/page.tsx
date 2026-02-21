@@ -14,14 +14,13 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 
-// Tipagem dos dados
+// Tipagem dos dados focada no total
 interface AlunoNota {
   id: number;
   nome: string;
   nota1: string;
   nota2: string;
   nota3: string;
-  media: string;
 }
 
 interface Disciplina {
@@ -45,10 +44,18 @@ export default function GradesPage() {
   const [alunos, setAlunos] = useState<AlunoNota[]>([])
   const [searchTerm, setSearchTerm] = useState("")
 
-  // 1. Efeito para carregar as TURMAS do professor via API
+  // Função para calcular o TOTAL das notas dinamicamente
+  const calcularTotal = (n1: string, n2: string, n3: string) => {
+    const notas = [parseFloat(n1), parseFloat(n2), parseFloat(n3)].filter(n => !isNaN(n));
+    if (notas.length === 0) return "-";
+    
+    const soma = notas.reduce((acc, curr) => acc + curr, 0);
+    return soma.toFixed(1); 
+  };
+
+  // Efeito para carregar as TURMAS do professor via API
   useEffect(() => {
     const fetchTurmas = async () => {
-      // Pega o objeto do usuário e o token separadamente, conforme salvo no login/page.tsx
       const savedUser = localStorage.getItem("@Escola:user");
       const token = localStorage.getItem("@Escola:token"); 
 
@@ -68,12 +75,9 @@ export default function GradesPage() {
           if (response.ok) {
             const data = await response.json();
             setDadosProfessor(data);
-          } else {
-            const errorData = await response.json();
-            console.error("Erro na requisição:", errorData.erro);
           }
         } catch (error) {
-          console.error("Erro ao carregar turmas da API:", error);
+          console.error("Erro ao carregar turmas:", error);
         }
       }
     };
@@ -81,7 +85,7 @@ export default function GradesPage() {
     fetchTurmas();
   }, []);
 
-  // 2. Efeito quando troca a TURMA selecionada
+  // Efeito quando troca a TURMA selecionada
   useEffect(() => {
     if (!selectedTurmaId) {
       setDisciplinasDisponiveis([])
@@ -93,7 +97,6 @@ export default function GradesPage() {
     
     if (turmaEncontrada) {
       setDisciplinasDisponiveis(turmaEncontrada.disciplinas)
-
       if (turmaEncontrada.disciplinas.length === 1) {
         setSelectedDisciplinaId(turmaEncontrada.disciplinas[0].id.toString())
       } else {
@@ -102,10 +105,9 @@ export default function GradesPage() {
     }
   }, [selectedTurmaId, dadosProfessor])
 
-  // 3. Efeito quando troca a DISCIPLINA (Carrega os alunos)
+  // Efeito quando troca a DISCIPLINA (Carrega os alunos)
   useEffect(() => {
     const fetchAlunosDaTurma = async () => {
-      // Verifica se ambos os IDs estão selecionados
       if (!selectedTurmaId || !selectedDisciplinaId) {
         setAlunos([]);
         return;
@@ -114,10 +116,7 @@ export default function GradesPage() {
       setLoading(true);
       const token = localStorage.getItem("@Escola:token");
 
-      console.log(selectedTurmaId)
-
       try {
-        // ALTERAÇÃO: Adicionado o parâmetro disciplinaId na Query String
         const response = await fetch(
           `http://localhost:3001/turmas/alunos?turmaId=${selectedTurmaId}&disciplinaId=${selectedDisciplinaId}`, 
           {
@@ -132,10 +131,6 @@ export default function GradesPage() {
         if (response.ok) {
           const data = await response.json();
           setAlunos(data);
-        } else {
-          const errorData = await response.json();
-          console.error("Erro ao carregar alunos:", errorData.erro);
-          setAlunos([]);
         }
       } catch (error) {
         console.error("Erro na requisição de alunos:", error);
@@ -154,12 +149,7 @@ export default function GradesPage() {
 
     setAlunos(prev => prev.map(aluno => {
       if (aluno.id === id) {
-        const updatedAluno = { ...aluno, [field]: value }
-        const n1 = parseFloat(updatedAluno.nota1) || 0
-        const n2 = parseFloat(updatedAluno.nota2) || 0
-        const n3 = parseFloat(updatedAluno.nota3) || 0
-        const novaMedia = (n1 + n2 + n3) / 3
-        return { ...updatedAluno, media: novaMedia.toFixed(1) }
+        return { ...aluno, [field]: value }
       }
       return aluno
     }))
@@ -217,7 +207,7 @@ export default function GradesPage() {
                 >
                   <option value="" disabled>Selecione...</option>
                   {dadosProfessor.map(t => (
-                    <option key={t.id} value={t.id}>{t.turma}</option>
+                    <option key={t.id} value={t.id.toString()}>{t.turma}</option>
                   ))}
                 </select>
               </div>
@@ -245,7 +235,7 @@ export default function GradesPage() {
                     {!selectedTurmaId ? "Aguardando Turma..." : "Selecione..."}
                   </option>
                   {disciplinasDisponiveis.map(d => (
-                    <option key={d.id} value={d.id}>{d.nome}</option>
+                    <option key={d.id} value={d.id.toString()}>{d.nome}</option>
                   ))}
                 </select>
               </div>
@@ -262,7 +252,7 @@ export default function GradesPage() {
         ) : loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-12 h-12 text-[#00E5FF] animate-spin mb-4" />
-            <p className="text-[#3F3D56] font-bold text-lg">Carregando notas...</p>
+            <p className="text-[#3F3D56] font-bold text-lg">Carregando alunos...</p>
           </div>
         ) : (
           <div className="bg-white rounded-[35px] shadow-xl border-b-[8px] border-[#00E5FF] overflow-hidden">
@@ -285,49 +275,52 @@ export default function GradesPage() {
                     <th className="p-6 font-bold uppercase text-sm text-center w-[15%]">Unid. 1</th>
                     <th className="p-6 font-bold uppercase text-sm text-center w-[15%]">Unid. 2</th>
                     <th className="p-6 font-bold uppercase text-sm text-center w-[15%]">Unid. 3</th>
-                    <th className="p-6 font-bold uppercase text-sm text-center w-[15%]">Média</th>
+                    <th className="p-6 font-bold uppercase text-sm text-center w-[15%]">Total</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {filteredAlunos.map((aluno) => (
-                    <tr key={aluno.id} className="hover:bg-[#FFFDE7] transition-colors group">
-                      <td className="p-4 pl-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-[#E91E63]/10 text-[#E91E63] border border-[#E91E63]/20 flex items-center justify-center font-bold text-lg">
-                            {aluno.nome.charAt(0)}
+                  {filteredAlunos.map((aluno) => {
+                    const totalCalculado = calcularTotal(aluno.nota1, aluno.nota2, aluno.nota3);
+                    return (
+                      <tr key={aluno.id} className="hover:bg-[#FFFDE7] transition-colors group">
+                        <td className="p-4 pl-6">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#E91E63]/10 text-[#E91E63] border border-[#E91E63]/20 flex items-center justify-center font-bold text-lg">
+                              {aluno.nome.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-bold text-[#3F3D56]">{aluno.nome}</p>
+                              <p className="text-xs text-gray-400 font-bold">Matrícula: {aluno.id}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-bold text-[#3F3D56]">{aluno.nome}</p>
-                            <p className="text-xs text-gray-400 font-bold">Matrícula: {aluno.id}</p>
-                          </div>
-                        </div>
-                      </td>
-
-                      {['nota1', 'nota2', 'nota3'].map((field, index) => (
-                        <td key={index} className="p-2 text-center">
-                          <input 
-                            type="text"
-                            inputMode="decimal"
-                            value={aluno[field as keyof AlunoNota] as string}
-                            onChange={(e) => handleNotaChange(aluno.id, field as any, e.target.value)}
-                            placeholder="-"
-                            className="w-16 h-12 bg-gray-50 border-2 border-transparent focus:border-[#00E5FF] focus:bg-white rounded-xl text-center font-bold text-lg text-[#3F3D56] outline-none transition-all placeholder:text-gray-300"
-                          />
                         </td>
-                      ))}
 
-                      <td className="p-4 text-center">
-                        <div className={`
-                          inline-flex items-center justify-center w-16 h-10 rounded-xl font-bold text-lg border-2
-                          ${parseFloat(aluno.media) >= 6 
-                            ? "bg-[#00E5FF]/10 text-[#00E5FF] border-[#00E5FF]/20" 
-                            : "bg-[#E91E63]/10 text-[#E91E63] border-[#E91E63]/20"}
-                        `}>
-                          {isNaN(parseFloat(aluno.media)) ? "-" : aluno.media}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        {['nota1', 'nota2', 'nota3'].map((field, index) => (
+                          <td key={index} className="p-2 text-center">
+                            <input 
+                              type="text"
+                              inputMode="decimal"
+                              value={aluno[field as keyof AlunoNota] as string}
+                              onChange={(e) => handleNotaChange(aluno.id, field as any, e.target.value)}
+                              placeholder="-"
+                              className="w-16 h-12 bg-gray-50 border-2 border-transparent focus:border-[#00E5FF] focus:bg-white rounded-xl text-center font-bold text-lg text-[#3F3D56] outline-none transition-all placeholder:text-gray-300"
+                            />
+                          </td>
+                        ))}
+
+                        <td className="p-4 text-center">
+                          <div className={`
+                            inline-flex items-center justify-center w-16 h-10 rounded-xl font-bold text-lg border-2
+                            ${totalCalculado === "-" 
+                                ? "bg-gray-100 text-gray-400 border-gray-200"
+                                : "bg-[#00E5FF]/10 text-[#00E5FF] border-[#00E5FF]/20"}
+                          `}>
+                            {totalCalculado}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

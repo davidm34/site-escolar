@@ -69,7 +69,7 @@ const TurmasController = {
                 const disciplinas = await TurmasModel.listarDisciplinasDoProfessor(id, turma.turma_id);
                 
                 resultado.push({
-                    id: Number(id),
+                    id: turmas[i].turma_id,
                     turma: turma.nome,
                     disciplinas: disciplinas.map(d => ({
                         id: d.id,
@@ -146,7 +146,6 @@ const TurmasController = {
    async listarAlunos(req, res) {
         try {
             const { turmaId, disciplinaId } = req.query;
-            console.log(turmaId)
             const id_alunos = await TurmasModel.listarTurmaAlunos(turmaId);        
             const lista_nome_alunos = [];
             
@@ -155,10 +154,28 @@ const TurmasController = {
                 lista_nome_alunos.push(nome_aluno);
             }
 
-            const res = await TurmasModel.listarNotasAlunos(id_alunos, disciplinaId)
-            // CORREÇÃO: Enviar a resposta para o cliente
-            // return res.json(lista_nome_alunos);
-            
+            const notas = await TurmasModel.listarNotasAlunos(id_alunos, disciplinaId)
+
+            const alunosComNotas = lista_nome_alunos.map((aluno, index) => {
+            const notasAluno = notas[index];
+
+            // Cria um objeto com as notas indexadas por unidade_id
+            const notasPorUnidade = notasAluno.reduce((acc, item) => {
+                acc[`nota${item.unidade_id}`] = item.valor;
+                return acc;
+            }, {});
+
+            return {
+                id: aluno.id,
+                nome: aluno.nome_completo,
+                nota1: notasPorUnidade.nota1 || null,
+                nota2: notasPorUnidade.nota2 || null,
+                nota3: notasPorUnidade.nota3 || null
+            };
+            });
+
+
+            res.json(alunosComNotas);
         } catch (err) {
             console.error(err); // Adicionado para facilitar o debug
             res.status(500).json({ erro: 'Erro ao listar alunos da disciplina' });
