@@ -35,6 +35,18 @@ const TurmasModel = {
         return res.rows;
     },
 
+     // Listar disciplinas de uma turma
+    listarDisciplinasDaTurma: async (turma_id) => {
+        const res = await db.query(
+            `SELECT d.id, d.nome
+             FROM turmas_disciplinas td
+             JOIN disciplinas d ON d.id = td.disciplina_id
+             WHERE td.turma_id = $1`,
+            [turma_id]
+        );
+        return res.rows;
+    },
+
     listarTurmasProfessores: async (id) => {
         const result = await db.query(`
             SELECT t.id as turma_id, t.nome
@@ -93,7 +105,7 @@ const TurmasModel = {
         );
     },
 
-    // Listar disciplinas de uma turma
+    // Listar disciplinas de um professor
     listarDisciplinasDoProfessor: async (id, turma_id) => {
         const id_disciplinas = await db.query(
             `SELECT disciplina_id
@@ -134,10 +146,21 @@ const TurmasModel = {
         return res.rows;
     },
 
-    listarNotasAlunos: async(lista_alunos) => {
+    listarNotasAlunos: async(id_alunos, id_disciplina) => {
+
+        const ids = id_alunos.map(k => k.usuario_id);
+
+        console.log(ids)
+        console.log(id_disciplina)
+
         const res = await db.query(
-            `SELECT `
+            `SELECT unidade_id, valor
+            FROM notas
+            WHERE aluno_id = ANY($1::int[]) AND = WHERE disciplina_id = $2`,
+            [ids, id_disciplina]
         )
+        
+        return res.rows
     }
 
 };

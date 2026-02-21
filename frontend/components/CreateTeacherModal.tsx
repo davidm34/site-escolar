@@ -160,9 +160,11 @@ export function CreateTeacherModal({ isOpen, onClose, onSuccess }: CreateTeacher
                         className="w-full bg-[#FAFAFA] border-2 border-gray-100 focus:border-[#E91E63] text-gray-600 rounded-2xl py-3 pl-12 pr-4 outline-none transition-all font-medium h-12 appearance-none cursor-pointer"
                       >
                           <option value="" disabled>Selecione...</option>
-                          <option value="1">Maternal I</option>
-                          <option value="2">Maternal II</option>
-                          <option value="3">1° Ano</option>
+                          <option value="1">Maternal</option>
+                          <option value="2">1° Periodo</option>
+                          <option value="3">2° periodo</option>
+                          <option value="4">1° ano</option>
+                          <option value="5">2° ano</option>
                       </select>
                   </div>
               </div>

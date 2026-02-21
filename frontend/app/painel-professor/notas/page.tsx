@@ -105,6 +105,7 @@ export default function GradesPage() {
   // 3. Efeito quando troca a DISCIPLINA (Carrega os alunos)
   useEffect(() => {
     const fetchAlunosDaTurma = async () => {
+      // Verifica se ambos os IDs estão selecionados
       if (!selectedTurmaId || !selectedDisciplinaId) {
         setAlunos([]);
         return;
@@ -113,19 +114,23 @@ export default function GradesPage() {
       setLoading(true);
       const token = localStorage.getItem("@Escola:token");
 
+      console.log(selectedTurmaId)
+
       try {
-        // Faz a requisição GET enviando o ID da turma selecionada como query parameter
-        const response = await fetch(`http://localhost:3001/turmas/alunos?turmaId=${selectedTurmaId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+        // ALTERAÇÃO: Adicionado o parâmetro disciplinaId na Query String
+        const response = await fetch(
+          `http://localhost:3001/turmas/alunos?turmaId=${selectedTurmaId}&disciplinaId=${selectedDisciplinaId}`, 
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
           }
-        });
+        );
 
         if (response.ok) {
           const data = await response.json();
-          // Certifique-se que o backend retorna os campos: id, nome, nota1, nota2, nota3 e media
           setAlunos(data);
         } else {
           const errorData = await response.json();

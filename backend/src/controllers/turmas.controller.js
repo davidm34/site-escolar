@@ -60,7 +60,7 @@ const TurmasController = {
             const { id } = req.query;
 
             const turmas = await TurmasModel.listarTurmasProfessores(id);
-            
+
             const resultado = [];
             
             for (let i = 0; i < turmas.length; i++) {
@@ -145,7 +145,8 @@ const TurmasController = {
 
    async listarAlunos(req, res) {
         try {
-            const { turmaId } = req.query;
+            const { turmaId, disciplinaId } = req.query;
+            console.log(turmaId)
             const id_alunos = await TurmasModel.listarTurmaAlunos(turmaId);        
             const lista_nome_alunos = [];
             
@@ -153,7 +154,8 @@ const TurmasController = {
                 const nome_aluno = await Models.getNomeById(id_alunos[i].usuario_id);
                 lista_nome_alunos.push(nome_aluno);
             }
-            console.log(lista_nome_alunos)
+
+            const res = await TurmasModel.listarNotasAlunos(id_alunos, disciplinaId)
             // CORREÇÃO: Enviar a resposta para o cliente
             // return res.json(lista_nome_alunos);
             
