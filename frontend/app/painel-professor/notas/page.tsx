@@ -157,7 +157,61 @@ export default function GradesPage() {
 
   const filteredAlunos = alunos.filter(a => 
     a.nome.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  );
+
+  //
+  const handleSave = async () => {
+    setLoading(true);
+    const token = localStorage.getItem("@Escola:token");
+
+    try {
+      // Criamos uma lista de promessas para atualizar cada nota de cada aluno
+      const promises = alunos.flatMap(aluno => {
+        // Mapeamos as unidades para os seus respectivos valores no estado
+        const notasParaAtualizar = [
+          { unidade: 1, valor: aluno.nota1 },
+          { unidade: 2, valor: aluno.nota2 },
+          { unidade: 3, valor: aluno.nota3 }
+        ];
+
+        return notasParaAtualizar
+          .filter(n => n.valor !== "" && n.valor !== "-") // Ignora campos vazios
+          .map(n => {
+            // O endpoint PUT /notas/:id espera o ID da nota. 
+            // Se o seu estado 'aluno' não tiver o ID da nota específica, 
+            // você precisará garantir que o GET inicial retorne esses IDs.
+            // Aqui usamos aluno.id como exemplo de referência:
+            return fetch(`http://localhost:3001/notas/${aluno.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                aluno_id: aluno.id,           // Necessário para validação de permissão
+                disciplina_id: selectedDisciplinaId, // Necessário para validação
+                unidade_id: n.unidade,
+                nota: parseFloat(n.valor)     // O backend usa o nome 'nota'
+              })
+            });
+          });
+      });
+
+      const resultados = await Promise.all(promises);
+      
+      // Verifica se todas as requisições foram bem sucedidas
+      if (resultados.every(res => res.ok)) {
+        alert("Todas as notas foram salvas com sucesso!");
+      } else {
+        alert("Algumas notas não puderam ser salvas. Verifique as permissões.");
+      }
+    } catch (error) {
+      console.error("Erro ao comunicar com o servidor:", error);
+      alert("Erro técnico ao salvar notas.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FFFDE7] font-fredoka p-6 pb-20 relative overflow-hidden flex flex-col items-center">
@@ -329,8 +383,16 @@ export default function GradesPage() {
               <span className="text-sm font-bold text-gray-400">
                 Total: {filteredAlunos.length} alunos
               </span>
-              <Button className="h-12 px-8 rounded-full bg-[#E91E63] hover:bg-[#d81b60] text-white font-bold shadow-md hover:translate-y-[-2px] transition-all">
-                <Save className="mr-2 w-5 h-5" />
+              <Button 
+                onClick={handleSave}
+                disabled={loading}
+                className="h-12 px-8 rounded-full bg-[#E91E63] hover:bg-[#d81b60] text-white font-bold shadow-md hover:translate-y-[-2px] transition-all disabled:opacity-50"
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+                ) : (
+                  <Save className="mr-2 w-5 h-5" />
+                )}
                 Salvar Notas
               </Button>
             </div>

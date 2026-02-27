@@ -56,7 +56,7 @@ module.exports = {
     async atualizar(req, res) {
         const { cargo, id: usuarioId } = req.usuario;
         const { id } = req.params;
-        const { aluno_id, disciplina_id, nota } = req.body;
+        const { aluno_id, disciplina_id, unidade_id, nota } = req.body;
 
         try {
             if (cargo === 'administrador') {
@@ -70,12 +70,14 @@ module.exports = {
                     aluno_id,
                     disciplina_id
                 );
-
+                
                 if (!permitido) {
                     return res.status(403).json({ erro: 'Professor não autorizado' });
                 }
+                      
+                const id_nota = await NotasModel.buscarId(aluno_id, disciplina_id, unidade_id);
 
-                await NotasModel.atualizarNota(id, nota);
+                await NotasModel.atualizarNota(id_nota, nota);
                 return res.json({ mensagem: 'Nota atualizada' });
             }
 

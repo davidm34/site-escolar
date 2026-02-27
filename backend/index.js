@@ -19,6 +19,7 @@ app.use('/aluno', require('./src/routes/aluno'));
 app.use('/professores', require('./src/routes/professores'));
 app.use('/administradores', require('./src/routes/administradores'));
 app.use('/turmas', require('./src/routes/turmas'))
+app.use('/notas', require('./src/routes/notas'))
 
 
 // Rota padrão para teste
